@@ -1,0 +1,23 @@
+﻿<div class="mb-3">
+
+    <label class="form-label">@Label</label>
+
+    <input class="form-control"
+           type="text"
+           placeholder="@Placeholder"
+           @bind="Valor" />
+
+</div>
+
+@code {
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; }
+
+    [Parameter]
+    public string Valor { get; set; }
+
+}

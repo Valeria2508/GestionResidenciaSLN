@@ -1,0 +1,62 @@
+﻿/* ============================================================
+   NavMenu.razor.css - Estilos del menu lateral
+   Coloca este archivo junto a NavMenu.razor
+   ============================================================ */
+
+.navbar-toggler {
+    appearance: none;
+    cursor: pointer;
+    width: 3.5rem;
+    height: 2.5rem;
+    color: white;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem;
+}
+
+.nav-section {
+    padding-top: 0.5rem;
+    padding-bottom: 0.25rem;
+}
+
+.nav-item {
+    font-size: 0.9rem;
+    padding-bottom: 0;
+}
+
+.nav-item ::deep .nav-link {
+    color: #d7d8db;
+    border-radius: 4px;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    line-height: 3rem;
+    padding: 0 0.75rem;
+}
+
+.nav-item ::deep a.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-item ::deep .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: white;
+}
+
+nav.flex-column {
+    overflow-y: auto;
+    max-height: calc(100vh - 3.5rem);
+    padding-bottom: 1rem;
+}
+
+nav.flex-column::-webkit-scrollbar {
+    width: 6px;
+}
+
+nav.flex-column::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
