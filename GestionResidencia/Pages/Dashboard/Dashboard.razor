@@ -1,23 +1,34 @@
 ﻿@page "/dashboard"
 
-<h3>Dashboard</h3>
+<h3 class="mb-4 text-primary">
+    <i class="bi bi-speedometer2"></i> Dashboard
+</h3>
 
-<p>Bienvenido al sistema!</p>
+<div class="row g-4">
 
-<button class="btn btn-primary">
-    <NavLink href="/Usuario" class="text-white">
-        gestiona usuarios y roles
-    </NavLink>
-</button>
-<br>
-<button class="btn btn-primary">
-    <NavLink href="/auditoriaLogin" class="text-white">
-        gestiona auditoria
-    </NavLink>
-</button>
+    <DashboardCard Titulo="Apartamentos"
+                   Valor="@totalApartamentos"
+                   Icono="bi bi-building" />
 
-<button class="btn btn-primary">
-    <NavLink href="/zonasComunes" class="text-white">
-        administra zonas comunes
-    </NavLink>
-</button>
+    <DashboardCard Titulo="Residentes"
+                   Valor="@totalResidentes"
+                   Icono="bi bi-people" />
+
+    <DashboardCard Titulo="Visitantes"
+                   Valor="@totalVisitantes"
+                   Icono="bi bi-person-walking" />
+
+    <DashboardCard Titulo="Parqueaderos"
+                   Valor="@totalParqueaderos"
+                   Icono="bi bi-car-front" />
+
+</div>
+
+@code {
+
+    int totalApartamentos = 120;
+    int totalResidentes = 350;
+    int totalVisitantes = 15;
+    int totalParqueaderos = 98;
+
+}

@@ -11,9 +11,11 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>UnidadId</th>
+            <th>Periodo</th>
+            <th>Valor</th>
+            <th>FechaVencimiento</th>
+            <th>EstadoPago</th>
         </tr>
     </thead>
 
@@ -24,8 +26,11 @@
             <tr>
 
                 <td>@item.Id</td>
-                <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.UnidadId</td>
+                <td>@item.Periodo</td>
+                <td>@item.Valor</td>
+                <td>@item.FechaVencimiento</td>
+                <td>@item.EstadoPago</td>
 
                 <td>
 
@@ -105,8 +110,9 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, UnidadId="1", Periodo="2023-03", Valor="15000", FechaVencimiento="2023-03-15" , EstadoPago="1"});
+        lista.Add(new ItemVM { Id = 2, UnidadId = "2", Periodo = "2023-03", Valor = "15000", FechaVencimiento = "2023-03-15", EstadoPago = "2" });
+        lista.Add(new ItemVM { Id = 3, UnidadId = "3", Periodo = "2023-03", Valor = "15000", FechaVencimiento = "2023-03-15", EstadoPago = "3" });
 
     }
 
@@ -122,8 +128,11 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            UnidadId = item.UnidadId,
+            Periodo = item.Periodo,
+            Valor = item.Valor,
+            FechaVencimiento = item.FechaVencimiento,
+            EstadoPago = item.EstadoPago
         };
 
         tituloFormulario = "Editar Registro";
@@ -145,8 +154,11 @@
 
             var registro = lista.First(x => x.Id == modelo.Id);
 
-            registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.UnidadId = modelo.UnidadId;
+            registro.Periodo = modelo.Periodo;
+            registro.Valor = modelo.Valor;
+            registro.FechaVencimiento = modelo.FechaVencimiento;
+            registro.EstadoPago = modelo.EstadoPago;
 
         }
 
@@ -172,9 +184,12 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string UnidadId { get; set; }
 
-        public string Estado { get; set; }
+        public string Periodo { get; set; }
+        public string Valor { get; set; }
+        public string FechaVencimiento { get; set; }
+        public string EstadoPago { get; set; }
     }
 
 }

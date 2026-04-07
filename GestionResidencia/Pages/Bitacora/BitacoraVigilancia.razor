@@ -1,4 +1,4 @@
-﻿@page "/bitacora"
+﻿@page "/bitacoraVigilancia"
 
 <h3>Bitácora</h3>
 
@@ -11,9 +11,11 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>TipoEventoId</th>
+            <th>Descripción</th>
+            <th>UsuarioId</th>
         </tr>
     </thead>    
 
@@ -24,8 +26,11 @@
             <tr>
 
                 <td>@item.Id</td>
-                <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.Fecha</td>
+                <td>@item.Hora</td>
+                <td>@item.TipoEventoId</td>
+                <td>@item.Descripcion</td>
+                <td>@item.UsuarioId</td>
 
                 <td>
 
@@ -105,8 +110,9 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, Fecha="2023-03-01",Hora="8:00am", TipoEventoId="1", Descripcion="Ingreso de residente", UsuarioId="1" });
+        lista.Add(new ItemVM { Id = 2, Fecha = "2023-03-01", Hora = "9:00am", TipoEventoId = "2", Descripcion = "Salida de visitante", UsuarioId = "2" });
+        lista.Add(new ItemVM { Id = 3, Fecha = "2023-03-01", Hora = "10:00am", TipoEventoId = "3", Descripcion = "Visita Autorizada por apartamento 101", UsuarioId = "2" });
 
     }
 
@@ -122,8 +128,11 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            Fecha = item.Fecha,
+            Hora = item.Hora,
+            TipoEventoId = item.TipoEventoId,
+            Descripcion = item.Descripcion,
+            UsuarioId = item.UsuarioId
         };
 
         tituloFormulario = "Editar Registro";
@@ -145,8 +154,11 @@
 
             var registro = lista.First(x => x.Id == modelo.Id);
 
-            registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.Fecha = modelo.Fecha;
+            registro.Hora = modelo.Hora;
+            registro.TipoEventoId = modelo.TipoEventoId;
+            registro.Descripcion = modelo.Descripcion;
+            registro.UsuarioId = modelo.UsuarioId;
 
         }
 
@@ -172,9 +184,12 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string Fecha { get; set; }
 
-        public string Estado { get; set; }
+        public string Hora { get; set; }
+        public string TipoEventoId { get; set; }
+        public string Descripcion { get; set; }
+        public string UsuarioId { get; set; }
     }
 
 }

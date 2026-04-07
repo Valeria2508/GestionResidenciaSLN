@@ -12,8 +12,11 @@
         <tr>
             <th>ID</th>
             <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>TipoDocumento</th>
+            <th>Documento</th>
+            <th>Telefono</th>
+            <th>FechaRegistro</th>
+
         </tr>
     </thead>
 
@@ -25,7 +28,10 @@
 
                 <td>@item.Id</td>
                 <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.TipoDocumento</td>
+                <td>@item.Documento</td>
+                <td>@item.Telefono</td>
+                <td>@item.FechaRegistro</td>
 
                 <td>
 
@@ -105,8 +111,10 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, TipoDocumento=" cc", Documento="123", Nombre="diego", Telefono="344", FechaRegistro="2020-02-02"});
+        lista.Add(new ItemVM { Id = 2, TipoDocumento = " ce", Documento = "456", Nombre = "maria", Telefono = "344", FechaRegistro = "2020-02-02" });
+        lista.Add(new ItemVM { Id = 3, TipoDocumento = " pasaporte", Documento = "789", Nombre = "juan", Telefono = "344", FechaRegistro = "2020-02-02" });
+        
 
     }
 
@@ -123,7 +131,10 @@
         {
             Id = item.Id,
             Nombre = item.Nombre,
-            Estado = item.Estado
+            TipoDocumento = item.TipoDocumento,
+            Documento = item.Documento,
+            Telefono = item.Telefono,
+            FechaRegistro = item.FechaRegistro
         };
 
         tituloFormulario = "Editar Registro";
@@ -146,7 +157,10 @@
             var registro = lista.First(x => x.Id == modelo.Id);
 
             registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.TipoDocumento = modelo.TipoDocumento;
+            registro.Documento = modelo.Documento;
+            registro.Telefono = modelo.Telefono;
+            registro.FechaRegistro = modelo.FechaRegistro;
 
         }
 
@@ -174,7 +188,10 @@
 
         public string Nombre { get; set; }
 
-        public string Estado { get; set; }
+        public string TipoDocumento { get; set; }
+        public string Documento { get; set; }
+        public string Telefono { get; set; }
+        public string FechaRegistro { get; set; }
     }
 
 }

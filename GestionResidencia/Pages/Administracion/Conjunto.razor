@@ -1,10 +1,16 @@
 ﻿@page "/conjunto"
 
-<h3>Conjunto</h3>
+<div class="card-header d-flex justify-content-between align-items-center">
 
-<button class="btn btn-primary mb-3" @onclick="Nuevo">
-    Nuevo Registro
-</button>
+    <h4 class="mb-0 text-primary">
+        Gestión de conjuntos
+    </h4>
+
+    <button class="btn btn-primary">
+        + Nuevo conjunto
+    </button>
+
+</div>
 
 <table class="table table-striped">
 
@@ -12,8 +18,11 @@
         <tr>
             <th>ID</th>
             <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Dirección</th>
+            <th>Ciudad</th>
+            <th>NIT</th>
+            <th>Teléfono</th>
+
         </tr>
     </thead>
 
@@ -25,7 +34,10 @@
 
                 <td>@item.Id</td>
                 <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.Direccion</td>
+                <td>@item.CIudad</td>
+                <td>@item.NIT</td>
+                <td>@item.Telefono</td>
 
                 <td>
 
@@ -105,8 +117,10 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Direccion="Calle 10# 20-30", CIudad="Medellin", NIT="12345", Telefono="31012422" });
+        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Direccion = " Calle 10# 20-30", CIudad="Medellin", NIT="34345", Telefono="2343434" });
+        lista.Add(new ItemVM { Id = 3, Nombre = "Registro 3", Direccion = " Calle 10# 20-30", CIudad = "Medellin", NIT = "54345", Telefono = "2343434" });
+        lista.Add(new ItemVM { Id = 4, Nombre = "Registro 4", Direccion = " Calle 10# 20-30", CIudad = "Medellin", NIT = "64345", Telefono = "2343434" });
 
     }
 
@@ -123,7 +137,11 @@
         {
             Id = item.Id,
             Nombre = item.Nombre,
-            Estado = item.Estado
+            Direccion = item.CIudad,
+            CIudad = item.CIudad,
+            NIT = item.NIT,
+            Telefono = item.Telefono
+
         };
 
         tituloFormulario = "Editar Registro";
@@ -146,7 +164,11 @@
             var registro = lista.First(x => x.Id == modelo.Id);
 
             registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.Direccion = modelo.Direccion;
+            registro.CIudad = modelo.CIudad;
+            registro.NIT = modelo.NIT;
+            registro.Telefono = modelo.Telefono;
+
 
         }
 
@@ -174,7 +196,10 @@
 
         public string Nombre { get; set; }
 
-        public string Estado { get; set; }
+        public string Direccion { get; set; }
+        public string CIudad { get; set; }
+        public string NIT { get; set; }  
+        public string Telefono { get; set; }  
     }
 
 }

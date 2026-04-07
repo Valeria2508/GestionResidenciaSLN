@@ -1,4 +1,5 @@
 ﻿@page "/zonasComunes"
+@using Microsoft.AspNetCore.Components.Authorization
 
 <h3>Zonas Comunes</h3>
 
@@ -8,9 +9,11 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Torre</th>
-            <th>Número</th>
-            <th>Estado</th>
+            <th>ConjuntoId</th>
+            <th>Nombre</th>
+            <th>Capacidad</th>
+            <th>Requiere pago</th>
+            <th>Valor hora</th>
             <th></th>
         </tr>
     </thead>
@@ -20,9 +23,11 @@
         {
             <tr>
                 <td>@item.Id</td>
-                <td>@item.Torre</td>
-                <td>@item.Numero</td>
-                <td>@item.Estado</td>
+                <td>@item.ConjuntoId</td>
+                <td>@item.Nombre</td>
+                <td>@item.Capacicdad</td>
+                <td>@item.RequierePago</td>
+                <td>@item.ValorHora</td>
 
                 <td>
                     <button class="btn btn-warning btn-sm">Editar</button>
@@ -41,17 +46,21 @@
     {
         apartamentos = new List<ApartamentoVM>()
         {
-            new ApartamentoVM{ Id=1, Torre="A", Numero="101", Estado="Ocupado"},
-            new ApartamentoVM{ Id=2, Torre="A", Numero="102", Estado="Disponible"}
+            new ApartamentoVM{ Id=1, ConjuntoId="1", Nombre="Salon Social", Capacicdad="50", RequierePago="0", ValorHora="null"},
+            new ApartamentoVM{ Id=2, ConjuntoId="1", Nombre="Gimnasio", Capacicdad="10", RequierePago="1", ValorHora="10000"}, 
+            new ApartamentoVM{ Id=3, ConjuntoId="2", Nombre="Piscina", Capacicdad="30", RequierePago="1", ValorHora="15000"},
+            new ApartamentoVM{ Id=4, ConjuntoId="2", Nombre="Cancha de tenis", Capacicdad="20", RequierePago="1", ValorHora="20000"}
         };
     }
 
     public class ApartamentoVM
     {
         public int Id { get; set; }
-        public string Torre { get; set; }
-        public string Numero { get; set; }
-        public string Estado { get; set; }
+        public string ConjuntoId { get; set; }
+        public string Nombre { get; set; }
+        public string Capacicdad { get; set; }
+        public string RequierePago { get; set; }
+        public string ValorHora { get; set; }
     }
 
 }

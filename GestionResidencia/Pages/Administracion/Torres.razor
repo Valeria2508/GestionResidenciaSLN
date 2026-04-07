@@ -11,9 +11,8 @@
     <thead>
         <tr>
             <th>ID</th>
+            <th>ConjuntoId</th>
             <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
         </tr>
     </thead>
 
@@ -24,8 +23,8 @@
             <tr>
 
                 <td>@item.Id</td>
+                <td>@item.ConjuntoId</td>
                 <td>@item.Nombre</td>
-                <td>@item.Estado</td>
 
                 <td>
 
@@ -105,8 +104,10 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, ConjuntoId="1", Nombre="Torre A" });
+        lista.Add(new ItemVM { Id = 2, ConjuntoId = "1", Nombre = "Torre B" });
+        lista.Add(new ItemVM { Id = 3, ConjuntoId = "1", Nombre = "Torre C" });
+        lista.Add(new ItemVM { Id = 4, ConjuntoId = "1", Nombre = "Torre D" });
 
     }
 
@@ -122,8 +123,8 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            ConjuntoId = item.ConjuntoId,
+            Nombre = item.Nombre
         };
 
         tituloFormulario = "Editar Registro";
@@ -146,7 +147,8 @@
             var registro = lista.First(x => x.Id == modelo.Id);
 
             registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.ConjuntoId = modelo.ConjuntoId;
+
 
         }
 
@@ -172,9 +174,9 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string ConjuntoId { get; set; }
 
-        public string Estado { get; set; }
+        public string Nombre { get; set; }
     }
 
 }

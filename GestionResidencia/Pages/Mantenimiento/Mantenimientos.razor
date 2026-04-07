@@ -11,9 +11,12 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>TipoMantenimnientoId</th>
+            <th>FechaProgramada</th>
+            <th>FechaRealizacion</th>
+            <th>Descripcion</th>
+            <th>Responsable</th>
+            <th>Costo</th>
         </tr>
     </thead>
 
@@ -24,8 +27,12 @@
             <tr>
 
                 <td>@item.Id</td>
-                <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.TipoMantenimientoId</td>
+                <td>@item.FechaProgramada</td>
+                <td>@item.FechaRealizacion</td>
+                <td>@item.Descripcion</td>
+                <td>@item.Responsable</td>
+                <td>@item.costo</td>
 
                 <td>
 
@@ -105,8 +112,9 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, TipoMantenimientoId="1", FechaProgramada="2024-08-03", FechaRealizacion="2024-08-03", Descripcion=" descripcion de asensores", Responsable="Empresa x", costo="12000" });
+        lista.Add(new ItemVM { Id = 2, TipoMantenimientoId="2", FechaProgramada="2024-08-10", FechaRealizacion="2024-08-10", Descripcion=" descripcion de limpieza", Responsable="Empresa y", costo="8000" });
+        lista.Add(new ItemVM { Id = 3, TipoMantenimientoId = "3", FechaProgramada = "2024-08-15", FechaRealizacion = "2024-08-15", Descripcion = " descripcion de jardineria", Responsable = "Empresa z", costo = "5000" });
 
     }
 
@@ -122,8 +130,12 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            TipoMantenimientoId = item.TipoMantenimientoId,
+            FechaProgramada = item.FechaProgramada,
+            FechaRealizacion = item.FechaRealizacion,
+            Descripcion = item.Descripcion,
+            Responsable = item.Responsable,
+            costo = item.costo
         };
 
         tituloFormulario = "Editar Registro";
@@ -145,8 +157,12 @@
 
             var registro = lista.First(x => x.Id == modelo.Id);
 
-            registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.TipoMantenimientoId = modelo.TipoMantenimientoId;
+            registro.FechaProgramada = modelo.FechaProgramada;
+            registro.FechaRealizacion = modelo.FechaRealizacion;
+            registro.Descripcion = modelo.Descripcion;
+            registro.Responsable = modelo.Responsable;
+            registro.costo = modelo.costo;
 
         }
 
@@ -172,9 +188,13 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string TipoMantenimientoId { get; set; }
 
-        public string Estado { get; set; }
+        public string FechaProgramada { get; set; }
+        public string FechaRealizacion { get; set; }
+        public string Descripcion { get; set; }
+        public string Responsable { get; set; }
+        public string costo { get; set; }
     }
 
 }

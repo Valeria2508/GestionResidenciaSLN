@@ -11,9 +11,13 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>UnidadId</th>
+            <th>UsuarioId</th>
+            <th>Empresa</th>
+            <th>Guia</th>
+            <th>Descripcion</th>
+            <th>FechaRecepcion</th>
+            <th>FechaEntrega</th>
         </tr>
     </thead>
 
@@ -24,8 +28,13 @@
             <tr>
 
                 <td>@item.Id</td>
-                <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.UnidadId</td>
+                <td>@item.UsuarioId</td>
+                <td>@item.Empresa</td>
+                <td>@item.Guia</td>
+                <td>@item.Descripcion</td>
+                <td>@item.FechaRecepcion</td>
+                <td>@item.FechaEntrega</td>
 
                 <td>
 
@@ -76,6 +85,11 @@
 
             </select>
 
+            <DashboardCard
+                Titulo="Mensajería"
+                Valor="8"
+                Icono="bi bi-box-seam" />
+
         </div>
 
         <button class="btn btn-success"
@@ -105,8 +119,10 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, UnidadId="1", UsuarioId="1", Empresa="mercado libre", Guia="ab56", Descripcion="pantalon", FechaRecepcion="2026-12-02", FechaEntrega="2026-12-02"});
+        lista.Add(new ItemVM { Id = 2, UnidadId = "2", UsuarioId = "2", Empresa = "amazon", Guia = "cd78", Descripcion = "camisa", FechaRecepcion = "2026-12-02", FechaEntrega = "2026-12-02" });
+        lista.Add(new ItemVM { Id = 3, UnidadId = "3", UsuarioId = "3", Empresa = "linio", Guia = "ef90", Descripcion = "zapatos", FechaRecepcion = "2026-12-02", FechaEntrega = "2026-12-02" });
+        
 
     }
 
@@ -122,8 +138,13 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            UnidadId = item.UnidadId,
+            UsuarioId = item.UsuarioId,
+            Empresa = item.Empresa,
+            Guia = item.Guia,
+            Descripcion = item.Descripcion,
+            FechaRecepcion = item.FechaRecepcion,
+            FechaEntrega = item.FechaEntrega
         };
 
         tituloFormulario = "Editar Registro";
@@ -145,8 +166,13 @@
 
             var registro = lista.First(x => x.Id == modelo.Id);
 
-            registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.UnidadId = modelo.UnidadId;
+            registro.UsuarioId = modelo.UsuarioId;
+            registro.Empresa = modelo.Empresa;
+            registro.Guia = modelo.Guia;
+            registro.Descripcion = modelo.Descripcion;
+            registro.FechaRecepcion = modelo.FechaRecepcion;
+            registro.FechaEntrega = modelo.FechaEntrega;
 
         }
 
@@ -172,9 +198,14 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string UnidadId { get; set; }
 
-        public string Estado { get; set; }
+        public string UsuarioId { get; set; }
+        public string Empresa { get; set; }
+        public string Guia { get; set; }
+        public string Descripcion { get; set; }
+        public string FechaRecepcion { get; set; }
+        public string FechaEntrega { get; set; }
     }
 
 }

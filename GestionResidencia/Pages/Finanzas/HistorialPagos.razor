@@ -11,9 +11,10 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>CUota AdmninistracionId</th>
+            <th>Fecha pago</th>
+            <th>Valor Pago</th>
+            <th>Metodo Pago</th>
         </tr>
     </thead>
 
@@ -24,8 +25,10 @@
             <tr>
 
                 <td>@item.Id</td>
-                <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.CuotasAdministracionId</td>
+                <td>@item.FechaPago</td>
+                <td>@item.ValorPago</td>
+                <td>@item.MetodoPago</td>
 
                 <td>
 
@@ -105,8 +108,9 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, CuotasAdministracionId="1", FechaPago="2026-03-10", ValorPago="1000", MetodoPago="1" });
+        lista.Add(new ItemVM { Id = 2, CuotasAdministracionId = "2", FechaPago = "2026-03-11", ValorPago = "1500", MetodoPago = "2" });
+        lista.Add(new ItemVM { Id = 3, CuotasAdministracionId = "3", FechaPago = "2026-03-12", ValorPago = "2000", MetodoPago = "3" }); 
 
     }
 
@@ -122,8 +126,10 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            CuotasAdministracionId = item.CuotasAdministracionId,
+            FechaPago = item.FechaPago,
+            ValorPago = item.ValorPago,
+            MetodoPago = item.MetodoPago
         };
 
         tituloFormulario = "Editar Registro";
@@ -145,8 +151,10 @@
 
             var registro = lista.First(x => x.Id == modelo.Id);
 
-            registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.CuotasAdministracionId = modelo.CuotasAdministracionId;
+            registro.FechaPago = modelo.FechaPago;
+            registro.ValorPago = modelo.ValorPago;
+            registro.MetodoPago = modelo.MetodoPago;
 
         }
 
@@ -172,9 +180,11 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string CuotasAdministracionId { get; set; }
 
-        public string Estado { get; set; }
+        public string FechaPago { get; set; }
+        public string ValorPago { get; set; }
+        public string MetodoPago { get; set; }
     }
 
 }

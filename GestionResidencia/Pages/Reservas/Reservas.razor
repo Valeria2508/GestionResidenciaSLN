@@ -11,9 +11,14 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>ZonaComun</th>
+            <th>UsuarioId</th>
+            <th>EstadoReservaId</th>
+            <th>Fecha</th>
+            <th>HoraInicio</th>
+            <th>HoraFin</th>
+            <th>Observaciones</th>
+
         </tr>
     </thead>
 
@@ -24,8 +29,13 @@
             <tr>
 
                 <td>@item.Id</td>
-                <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.ZOnaComun</td>
+                <td>@item.UsuarioId</td>
+                <td>@item.EstadoReservaId</td>
+                <td>@item.Fecha</td>
+                <td>@item.HoraInicio</td>
+                <td>@item.HoraFin</td>
+                <td>@item.Observaciones</td>
 
                 <td>
 
@@ -105,8 +115,8 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, ZOnaComun="Gym", UsuarioId="1", EstadoReservaId="ocupado", Fecha="hoy", HoraInicio="2pm", HoraFin="3pm" });
+       
 
     }
 
@@ -122,8 +132,13 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            ZOnaComun = item.ZOnaComun,
+            UsuarioId = item.UsuarioId,
+            EstadoReservaId = item.EstadoReservaId,
+            Fecha = item.Fecha,
+            HoraInicio = item.HoraInicio,
+            HoraFin = item.HoraFin,
+            Observaciones = item.Observaciones
         };
 
         tituloFormulario = "Editar Registro";
@@ -145,8 +160,13 @@
 
             var registro = lista.First(x => x.Id == modelo.Id);
 
-            registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.ZOnaComun = modelo.ZOnaComun;
+            registro.UsuarioId = modelo.UsuarioId;
+            registro.EstadoReservaId = modelo.EstadoReservaId;
+            registro.Fecha = modelo.Fecha;
+            registro.HoraInicio = modelo.HoraInicio;
+            registro.HoraFin = modelo.HoraFin;
+            registro.Observaciones = modelo.Observaciones;
 
         }
 
@@ -172,9 +192,15 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string ZOnaComun { get; set; }
 
-        public string Estado { get; set; }
+        public string UsuarioId { get; set; }
+        public string EstadoReservaId { get; set; }
+        public string Fecha { get; set; }
+        public string HoraInicio { get; set; }
+        public string HoraFin { get; set; }
+        public string Observaciones { get; set; }
+
     }
 
 }

@@ -1,5 +1,103 @@
-﻿<h3>NavMenu</h3>
+﻿<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
 
-@code {
+    <div class="container-fluid">
 
-}
+        <!-- Logo -->
+        <a class="navbar-brand" href="/dashboard">
+            <i class="bi bi-building"></i>
+            Gestion Residencial
+        </a>
+
+        <!-- Botón móvil -->
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menu">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <!-- Menú -->
+        <div class="collapse navbar-collapse" id="menu">
+
+            <ul class="navbar-nav me-auto">
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        Dashboard
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/conjunto">
+                        <i class="bi bi-buildings"></i>
+                        Conjuntos
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/torres">
+                        <i class="bi bi-building"></i>
+                        Torres
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/parqueadero">
+                        <i class="bi bi-car-front"></i>
+                        Parqueaderos
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/zonasComunes">
+                        <i class="bi bi-tree"></i>
+                        Zonas Comunes
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/visitantes">
+                        <i class="bi bi-person-walking"></i>
+                        Visitantes
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/reservas">
+                        <i class="bi bi-calendar-check"></i>
+                        Reservas
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/mensajeria">
+                        <i class="bi bi-box-seam"></i>
+                        Mensajería
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/pagos">
+                        <i class="bi bi-cash-stack"></i>
+                        Pagos
+                    </NavLink>
+                </li>
+
+            </ul>
+
+            <!-- Usuario -->
+            <span class="navbar-text text-light">
+
+                <i class="bi bi-person-circle"></i>
+                Administrador
+
+            </span>
+
+        </div>
+
+    </div>
+
+</nav>

@@ -2,73 +2,79 @@
 
 @inject NavigationManager nav
 
-<h3>Iniciar Sesión</h3>
+<div class="d-flex justify-content-center align-items-center vh-100">
 
-<div class="card p-4" style="width:350px">
+    <div class="card shadow p-4" style="width:350px">
 
-    <input class="form-control mb-2"
-           placeholder="Usuario"
-           @bind="usuario" />
+        <h4 class="text-center mb-3">
+            <i class="bi bi-building"></i>
+            Sistema Residencial
+        </h4>
 
-    <input class="form-control mb-2"
-           type="password"
-           placeholder="Contraseña"
-           @bind="clave" />
+        <input class="form-control mb-2"
+               placeholder="Usuario"
+               @bind="usuario" />
 
-    <label>Seleccionar Rol</label>
+        <input class="form-control mb-2"
+               type="password"
+               placeholder="Contraseña"
+               @bind="clave" />
 
-    <select class="form-control mb-3" @bind="rol">
-        <option value="">Seleccione rol</option>
-        <option value="admin">Administrador</option>
-        <option value="vigilante">Vigilante</option>
-        <option value="residente">Residente</option>
-        <option value="contador">Contador</option>
-    </select>
+        <select class="form-control mb-3" @bind="rol">
 
-    <button class="btn btn-primary" @onclick="IniciarSesion">
-        Ingresar
-    </button>
+            <option value="">Seleccione rol</option>
+            <option value="admin">Administrador</option>
+            <option value="vigilante">Vigilante</option>
+            <option value="residente">Residente</option>
+            <option value="contador">Contador</option>
+
+        </select>
+
+        <button class="btn btn-primary w-100"
+                @onclick="IniciarSesion">
+
+            <i class="bi bi-box-arrow-in-right"></i>
+            Ingresar
+
+        </button>
+
+        <p class="text-danger mt-2">@mensaje</p>
+
+    </div>
 
 </div>
 
 @code {
 
-    string usuario;
-    string clave;
-    string rol;
-    string mensaje;
+    string usuario = "";
+    string clave = "";
+    string rol = "";
+    string mensaje = "";
 
     void IniciarSesion()
     {
+        if (string.IsNullOrEmpty(rol))
+        {
+            mensaje = "Debe seleccionar un rol";
+            return;
+        }
 
         if (rol == "admin")
         {
             nav.NavigateTo("/dashboard");
         }
-
         else if (rol == "vigilante")
         {
             nav.NavigateTo("/bitacoravigilancia");
         }
-
         else if (rol == "residente")
         {
             nav.NavigateTo("/reservas");
         }
-
         else if (rol == "contador")
         {
             nav.NavigateTo("/finanzas");
         }
-
-        if (string.IsNullOrEmpty(rol))
-        {
-            mensaje = "Debe seleccionar un rol";
-            return;
-
-        }
-
-
     }
 
 }

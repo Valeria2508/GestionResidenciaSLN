@@ -11,9 +11,12 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>UsuarioId</th>
+            <th>MetodoPagoId</th>
+            <th>Fechadepago</th>
+            <th>ValorTotal</th>
+            <th>Referencia</th>
+            <th>Observacion</th>
         </tr>
     </thead>
 
@@ -24,8 +27,15 @@
             <tr>
 
                 <td>@item.Id</td>
-                <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.UsuarioId</td>
+                <td>@item.MetodoPagoId</td>
+                <td>@item.fechaPago</td>
+                <td>@item.ValorTotal</td>
+                <td>@item.Referencia</td>
+                <td>@item.Observacion</td>
+                <td>@item.Referencia</td>
+                <td>@item.Observacion</td>
+
 
                 <td>
 
@@ -105,8 +115,9 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, UsuarioId="1", MetodoPagoId="1", fechaPago="2024-03", ValorTotal="20000", Referencia="alquiler", Observacion="gracias" });
+        lista.Add(new ItemVM { Id = 2, UsuarioId = "2", MetodoPagoId = "2", fechaPago = "2024-03", ValorTotal = "15000", Referencia = "alquiler", Observacion = "gracias" });
+        lista.Add(new ItemVM { Id = 3, UsuarioId = "3", MetodoPagoId = "3", fechaPago = "2024-03", ValorTotal = "10000", Referencia = "alquiler", Observacion = "gracias" });
 
     }
 
@@ -122,8 +133,12 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            UsuarioId = item.UsuarioId,
+            MetodoPagoId = item.MetodoPagoId,
+            fechaPago = item.fechaPago,
+            ValorTotal = item.ValorTotal,
+            Referencia = item.Referencia,
+            Observacion = item.Observacion
         };
 
         tituloFormulario = "Editar Registro";
@@ -145,8 +160,12 @@
 
             var registro = lista.First(x => x.Id == modelo.Id);
 
-            registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.UsuarioId = modelo.UsuarioId;
+            registro.MetodoPagoId = modelo.MetodoPagoId;
+            registro.fechaPago = modelo.fechaPago;
+            registro.ValorTotal = modelo.ValorTotal;
+            registro.Referencia = modelo.Referencia;
+            registro.Observacion = modelo.Observacion;
 
         }
 
@@ -172,9 +191,13 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string UsuarioId { get; set; }
 
-        public string Estado { get; set; }
+        public string MetodoPagoId { get; set; }
+        public string fechaPago { get; set; }
+        public string ValorTotal { get; set; }
+        public string Referencia { get; set; }
+        public string Observacion { get; set; }  
     }
 
 }

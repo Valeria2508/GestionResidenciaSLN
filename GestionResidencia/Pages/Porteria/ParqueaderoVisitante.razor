@@ -11,9 +11,11 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>ParqueaderoId</th>
+            <th>IngresoId</th>
+            <th>Placa</th>
+            <th>FechaHoraIngreso</th>
+            <th>FechaHoraSalida</th>
         </tr>
     </thead>
 
@@ -24,8 +26,11 @@
             <tr>
 
                 <td>@item.Id</td>
-                <td>@item.Nombre</td>
-                <td>@item.Estado</td>
+                <td>@item.ParqueaderoId</td>
+                <td>@item.IngresoId</td>
+                <td>@item.Placa</td>
+                <td>@item.FechaHoraIngreso</td>
+                <td>@item.FechaHoraSalida</td>
 
                 <td>
 
@@ -105,8 +110,9 @@
     protected override void OnInitialized()
     {
 
-        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Estado = "Activo" });
-        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Estado = "Activo" });
+        lista.Add(new ItemVM { Id = 1, ParqueaderoId="1", IngresoId="1", Placa="123", FechaHoraIngreso="2020-02-02:8:00", FechaHoraSalida="2020-02-02-9:00" });
+        lista.Add(new ItemVM { Id = 2, ParqueaderoId = "2", IngresoId = "2", Placa = "456", FechaHoraIngreso = "2020-02-02:10:00", FechaHoraSalida = "2020-02-02-11:00" });
+        
 
     }
 
@@ -122,8 +128,11 @@
         modelo = new ItemVM
         {
             Id = item.Id,
-            Nombre = item.Nombre,
-            Estado = item.Estado
+            ParqueaderoId = item.ParqueaderoId,
+            IngresoId = item.IngresoId,
+            Placa = item.Placa,
+            FechaHoraIngreso = item.FechaHoraIngreso,
+            FechaHoraSalida = item.FechaHoraSalida
         };
 
         tituloFormulario = "Editar Registro";
@@ -145,8 +154,11 @@
 
             var registro = lista.First(x => x.Id == modelo.Id);
 
-            registro.Nombre = modelo.Nombre;
-            registro.Estado = modelo.Estado;
+            registro.ParqueaderoId = modelo.ParqueaderoId;
+            registro.IngresoId = modelo.IngresoId;
+            registro.Placa = modelo.Placa;
+            registro.FechaHoraIngreso = modelo.FechaHoraIngreso;
+            registro.FechaHoraSalida = modelo.FechaHoraSalida;
 
         }
 
@@ -172,9 +184,12 @@
     {
         public int Id { get; set; }
 
-        public string Nombre { get; set; }
+        public string ParqueaderoId { get; set; }
 
-        public string Estado { get; set; }
+        public string IngresoId { get; set; }
+        public string Placa { get; set; }
+        public string FechaHoraIngreso { get; set; }
+        public string FechaHoraSalida { get; set; }
     }
 
 }
