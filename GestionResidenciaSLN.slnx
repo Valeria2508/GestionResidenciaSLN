@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="../../../../../../Desktop/GestioResidencia/GestionResidenciaSLN/GestionDeResidencia/GestionDeResidencia.csproj" Id="34996a32-3c4d-4d8c-a07d-590583ccf91f" />
-  <Project Path="../../../../../../Desktop/GestioResidencia/GestionResidenciaSLN/GestionResidencia/GestionResidencia.csproj" />
+  <Project Path="GestionResidenciaApi/GestionResidenciaApi.csproj" Id="34996a32-3c4d-4d8c-a07d-590583ccf91f" />
+  <Project Path="GestionResidenciaFront/GestionResidenciaFront.csproj" />
 </Solution>
