@@ -1,0 +1,66 @@
+﻿@page "/zonasComunes"
+@using Microsoft.AspNetCore.Components.Authorization
+
+<h3>Zonas Comunes</h3>
+
+<button class="btn btn-primary mb-3">Nuevo</button>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ConjuntoId</th>
+            <th>Nombre</th>
+            <th>Capacidad</th>
+            <th>Requiere pago</th>
+            <th>Valor hora</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in apartamentos)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.ConjuntoId</td>
+                <td>@item.Nombre</td>
+                <td>@item.Capacicdad</td>
+                <td>@item.RequierePago</td>
+                <td>@item.ValorHora</td>
+
+                <td>
+                    <button class="btn btn-warning btn-sm">Editar</button>
+                    <button class="btn btn-danger btn-sm">Eliminar</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    List<ApartamentoVM> apartamentos = new();
+
+    protected override void OnInitialized()
+    {
+        apartamentos = new List<ApartamentoVM>()
+        {
+            new ApartamentoVM{ Id=1, ConjuntoId="1", Nombre="Salon Social", Capacicdad="50", RequierePago="0", ValorHora="null"},
+            new ApartamentoVM{ Id=2, ConjuntoId="1", Nombre="Gimnasio", Capacicdad="10", RequierePago="1", ValorHora="10000"}, 
+            new ApartamentoVM{ Id=3, ConjuntoId="2", Nombre="Piscina", Capacicdad="30", RequierePago="1", ValorHora="15000"},
+            new ApartamentoVM{ Id=4, ConjuntoId="2", Nombre="Cancha de tenis", Capacicdad="20", RequierePago="1", ValorHora="20000"}
+        };
+    }
+
+    public class ApartamentoVM
+    {
+        public int Id { get; set; }
+        public string ConjuntoId { get; set; }
+        public string Nombre { get; set; }
+        public string Capacicdad { get; set; }
+        public string RequierePago { get; set; }
+        public string ValorHora { get; set; }
+    }
+
+}

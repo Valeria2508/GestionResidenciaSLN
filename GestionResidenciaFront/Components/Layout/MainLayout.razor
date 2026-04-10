@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <div class="col-2 sidebar p-3">
+
+            <h4 class="text-white text-center mb-4">
+                Gestion Residencial
+            </h4>
+
+            <a href="/dashboard">Dashboard</a>
+            <a href="/apartamentos">Apartamentos</a>
+            <a href="/torres">Torres</a>
+            <a href="/parqueaderos">Parqueaderos</a>
+            <a href="/personas">Residentes</a>
+            <a href="/visitantes">Visitantes</a>
+            <a href="/reservas">Reservas</a>
+            <a href="/pagos">Pagos</a>
+
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="col-10 p-4">
+
+            <div class="card card-custom p-4">
+
+                @Body
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

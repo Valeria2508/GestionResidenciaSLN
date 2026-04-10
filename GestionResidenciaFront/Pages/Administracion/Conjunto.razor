@@ -1,0 +1,205 @@
+﻿@page "/conjunto"
+
+<div class="card-header d-flex justify-content-between align-items-center">
+
+    <h4 class="mb-0 text-primary">
+        Gestión de conjuntos
+    </h4>
+
+    <button class="btn btn-primary">
+        + Nuevo conjunto
+    </button>
+
+</div>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Ciudad</th>
+            <th>NIT</th>
+            <th>Teléfono</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.Nombre</td>
+                <td>@item.Direccion</td>
+                <td>@item.CIudad</td>
+                <td>@item.NIT</td>
+                <td>@item.Telefono</td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, Nombre = "Registro 1", Direccion="Calle 10# 20-30", CIudad="Medellin", NIT="12345", Telefono="31012422" });
+        lista.Add(new ItemVM { Id = 2, Nombre = "Registro 2", Direccion = " Calle 10# 20-30", CIudad="Medellin", NIT="34345", Telefono="2343434" });
+        lista.Add(new ItemVM { Id = 3, Nombre = "Registro 3", Direccion = " Calle 10# 20-30", CIudad = "Medellin", NIT = "54345", Telefono = "2343434" });
+        lista.Add(new ItemVM { Id = 4, Nombre = "Registro 4", Direccion = " Calle 10# 20-30", CIudad = "Medellin", NIT = "64345", Telefono = "2343434" });
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            Nombre = item.Nombre,
+            Direccion = item.CIudad,
+            CIudad = item.CIudad,
+            NIT = item.NIT,
+            Telefono = item.Telefono
+
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.Nombre = modelo.Nombre;
+            registro.Direccion = modelo.Direccion;
+            registro.CIudad = modelo.CIudad;
+            registro.NIT = modelo.NIT;
+            registro.Telefono = modelo.Telefono;
+
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+
+        public string Nombre { get; set; }
+
+        public string Direccion { get; set; }
+        public string CIudad { get; set; }
+        public string NIT { get; set; }  
+        public string Telefono { get; set; }  
+    }
+
+}

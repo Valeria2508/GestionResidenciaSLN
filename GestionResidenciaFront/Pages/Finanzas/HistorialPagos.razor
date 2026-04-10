@@ -1,0 +1,190 @@
+﻿@page "/historialDePagos"
+
+<h3>Historial de pagos</h3>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    Nuevo Registro
+</button>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>CUota AdmninistracionId</th>
+            <th>Fecha pago</th>
+            <th>Valor Pago</th>
+            <th>Metodo Pago</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.CuotasAdministracionId</td>
+                <td>@item.FechaPago</td>
+                <td>@item.ValorPago</td>
+                <td>@item.MetodoPago</td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, CuotasAdministracionId="1", FechaPago="2026-03-10", ValorPago="1000", MetodoPago="1" });
+        lista.Add(new ItemVM { Id = 2, CuotasAdministracionId = "2", FechaPago = "2026-03-11", ValorPago = "1500", MetodoPago = "2" });
+        lista.Add(new ItemVM { Id = 3, CuotasAdministracionId = "3", FechaPago = "2026-03-12", ValorPago = "2000", MetodoPago = "3" }); 
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            CuotasAdministracionId = item.CuotasAdministracionId,
+            FechaPago = item.FechaPago,
+            ValorPago = item.ValorPago,
+            MetodoPago = item.MetodoPago
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.CuotasAdministracionId = modelo.CuotasAdministracionId;
+            registro.FechaPago = modelo.FechaPago;
+            registro.ValorPago = modelo.ValorPago;
+            registro.MetodoPago = modelo.MetodoPago;
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+
+        public string CuotasAdministracionId { get; set; }
+
+        public string FechaPago { get; set; }
+        public string ValorPago { get; set; }
+        public string MetodoPago { get; set; }
+    }
+
+}

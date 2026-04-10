@@ -1,0 +1,89 @@
+﻿@page "/apartamentos"
+
+<div class="card card-custom">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h4 class="mb-0 text-primary">
+            Gestión de Apartamentos
+        </h4>
+
+        <button class="btn btn-primary">
+            + Nuevo Apartamento
+        </button>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-hover table-bordered align-middle">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Torre</th>
+                    <th>Número</th>
+                    <th>Tipo</th>
+                    <th>Área (m²)</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in apartamentos)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Torre</td>
+                        <td>@item.Numero</td>
+                        <td>@item.Tipo</td>
+                        <td>@item.Area</td>
+
+                        <td class="text-center">
+
+                            <button class="btn btn-sm btn-primary me-2">
+                                Editar
+                            </button>
+
+                            <button class="btn btn-sm btn-secondary">
+                                Eliminar
+                            </button>
+
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    List<ApartamentoVM> apartamentos = new();
+
+    protected override void OnInitialized()
+    {
+        apartamentos = new List<ApartamentoVM>()
+        {
+            new ApartamentoVM{ Id=1, Torre="A", Numero="101", Tipo="Apartamento", Area="80.00"},
+            new ApartamentoVM{ Id=2, Torre="A", Numero="102", Tipo="Apartamento", Area="70.00"},
+            new ApartamentoVM{ Id=3, Torre="2", Numero="303", Tipo="Apartamento", Area="85.00"}
+        };
+    }
+
+    public class ApartamentoVM
+    {
+        public int Id { get; set; }
+        public string Torre { get; set; }
+        public string Numero { get; set; }
+        public string Tipo { get; set; }
+        public string Area { get; set; }
+    }
+
+}

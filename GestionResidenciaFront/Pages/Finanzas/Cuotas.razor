@@ -1,0 +1,195 @@
+﻿@page "/cuotas"
+
+<h3>Cuotas</h3>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    Nuevo Registro
+</button>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>UnidadId</th>
+            <th>Periodo</th>
+            <th>Valor</th>
+            <th>FechaVencimiento</th>
+            <th>EstadoPago</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.UnidadId</td>
+                <td>@item.Periodo</td>
+                <td>@item.Valor</td>
+                <td>@item.FechaVencimiento</td>
+                <td>@item.EstadoPago</td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, UnidadId="1", Periodo="2023-03", Valor="15000", FechaVencimiento="2023-03-15" , EstadoPago="1"});
+        lista.Add(new ItemVM { Id = 2, UnidadId = "2", Periodo = "2023-03", Valor = "15000", FechaVencimiento = "2023-03-15", EstadoPago = "2" });
+        lista.Add(new ItemVM { Id = 3, UnidadId = "3", Periodo = "2023-03", Valor = "15000", FechaVencimiento = "2023-03-15", EstadoPago = "3" });
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            UnidadId = item.UnidadId,
+            Periodo = item.Periodo,
+            Valor = item.Valor,
+            FechaVencimiento = item.FechaVencimiento,
+            EstadoPago = item.EstadoPago
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.UnidadId = modelo.UnidadId;
+            registro.Periodo = modelo.Periodo;
+            registro.Valor = modelo.Valor;
+            registro.FechaVencimiento = modelo.FechaVencimiento;
+            registro.EstadoPago = modelo.EstadoPago;
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+
+        public string UnidadId { get; set; }
+
+        public string Periodo { get; set; }
+        public string Valor { get; set; }
+        public string FechaVencimiento { get; set; }
+        public string EstadoPago { get; set; }
+    }
+
+}

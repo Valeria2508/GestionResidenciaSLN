@@ -1,0 +1,195 @@
+﻿@page "/parqueaderoVisitante"
+
+<h3>Parqueadero de visitantes</h3>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    Nuevo Registro
+</button>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ParqueaderoId</th>
+            <th>IngresoId</th>
+            <th>Placa</th>
+            <th>FechaHoraIngreso</th>
+            <th>FechaHoraSalida</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.ParqueaderoId</td>
+                <td>@item.IngresoId</td>
+                <td>@item.Placa</td>
+                <td>@item.FechaHoraIngreso</td>
+                <td>@item.FechaHoraSalida</td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, ParqueaderoId="1", IngresoId="1", Placa="123", FechaHoraIngreso="2020-02-02:8:00", FechaHoraSalida="2020-02-02-9:00" });
+        lista.Add(new ItemVM { Id = 2, ParqueaderoId = "2", IngresoId = "2", Placa = "456", FechaHoraIngreso = "2020-02-02:10:00", FechaHoraSalida = "2020-02-02-11:00" });
+        
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            ParqueaderoId = item.ParqueaderoId,
+            IngresoId = item.IngresoId,
+            Placa = item.Placa,
+            FechaHoraIngreso = item.FechaHoraIngreso,
+            FechaHoraSalida = item.FechaHoraSalida
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.ParqueaderoId = modelo.ParqueaderoId;
+            registro.IngresoId = modelo.IngresoId;
+            registro.Placa = modelo.Placa;
+            registro.FechaHoraIngreso = modelo.FechaHoraIngreso;
+            registro.FechaHoraSalida = modelo.FechaHoraSalida;
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+
+        public string ParqueaderoId { get; set; }
+
+        public string IngresoId { get; set; }
+        public string Placa { get; set; }
+        public string FechaHoraIngreso { get; set; }
+        public string FechaHoraSalida { get; set; }
+    }
+
+}

@@ -1,0 +1,200 @@
+﻿@page "/mantenimiento"
+
+<h3>Mantenimientos</h3>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    Nuevo Registro
+</button>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>TipoMantenimnientoId</th>
+            <th>FechaProgramada</th>
+            <th>FechaRealizacion</th>
+            <th>Descripcion</th>
+            <th>Responsable</th>
+            <th>Costo</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.TipoMantenimientoId</td>
+                <td>@item.FechaProgramada</td>
+                <td>@item.FechaRealizacion</td>
+                <td>@item.Descripcion</td>
+                <td>@item.Responsable</td>
+                <td>@item.costo</td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, TipoMantenimientoId="1", FechaProgramada="2024-08-03", FechaRealizacion="2024-08-03", Descripcion=" descripcion de asensores", Responsable="Empresa x", costo="12000" });
+        lista.Add(new ItemVM { Id = 2, TipoMantenimientoId="2", FechaProgramada="2024-08-10", FechaRealizacion="2024-08-10", Descripcion=" descripcion de limpieza", Responsable="Empresa y", costo="8000" });
+        lista.Add(new ItemVM { Id = 3, TipoMantenimientoId = "3", FechaProgramada = "2024-08-15", FechaRealizacion = "2024-08-15", Descripcion = " descripcion de jardineria", Responsable = "Empresa z", costo = "5000" });
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            TipoMantenimientoId = item.TipoMantenimientoId,
+            FechaProgramada = item.FechaProgramada,
+            FechaRealizacion = item.FechaRealizacion,
+            Descripcion = item.Descripcion,
+            Responsable = item.Responsable,
+            costo = item.costo
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.TipoMantenimientoId = modelo.TipoMantenimientoId;
+            registro.FechaProgramada = modelo.FechaProgramada;
+            registro.FechaRealizacion = modelo.FechaRealizacion;
+            registro.Descripcion = modelo.Descripcion;
+            registro.Responsable = modelo.Responsable;
+            registro.costo = modelo.costo;
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+
+        public string TipoMantenimientoId { get; set; }
+
+        public string FechaProgramada { get; set; }
+        public string FechaRealizacion { get; set; }
+        public string Descripcion { get; set; }
+        public string Responsable { get; set; }
+        public string costo { get; set; }
+    }
+
+}

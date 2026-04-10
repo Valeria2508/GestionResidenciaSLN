@@ -1,0 +1,161 @@
+﻿@page "/parqueadero"
+
+<h4 class="mb-4">
+    <i class="bi bi-car-front-fill text-primary"></i>
+    Gestión de Parqueaderos
+</h4>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    <i class="bi bi-plus-circle"></i> Nuevo Parqueadero
+</button>
+
+<table class="table table-hover table-bordered">
+
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Unidad</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Número</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.UnidadId</td>
+                <td>@item.TipoParqueaderoId</td>
+                <td>@item.EstadoParqueaderoId</td>
+                <td>@item.Numero</td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm me-1"
+                            @onclick="(()=>Editar(item))">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        <i class="bi bi-trash"></i>
+                    </button>
+
+                </td>
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <input class="form-control mb-2" placeholder="Unidad"
+               @bind="modelo.UnidadId" />
+
+        <input class="form-control mb-2" placeholder="Tipo"
+               @bind="modelo.TipoParqueaderoId" />
+
+        <input class="form-control mb-2" placeholder="Estado"
+               @bind="modelo.EstadoParqueaderoId" />
+
+        <input class="form-control mb-2" placeholder="Número"
+               @bind="modelo.Numero" />
+
+        <button class="btn btn-success me-2" @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary" @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+}
+
+@code {
+
+    List<ParqueaderoVM> lista = new();
+
+    ParqueaderoVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario;
+
+    protected override void OnInitialized()
+    {
+        lista.Add(new ParqueaderoVM { Id = 1, UnidadId = "1", TipoParqueaderoId = "1", EstadoParqueaderoId = "Activo", Numero = "P101" });
+        lista.Add(new ParqueaderoVM { Id = 2, UnidadId = "1", TipoParqueaderoId = "1", EstadoParqueaderoId = "Ocupado", Numero = "P102" });
+    }
+
+    void Nuevo()
+    {
+        modelo = new();
+        tituloFormulario = "Nuevo Parqueadero";
+        mostrarForm = true;
+    }
+
+    void Editar(ParqueaderoVM item)
+    {
+        modelo = new ParqueaderoVM
+        {
+            Id = item.Id,
+            UnidadId = item.UnidadId,
+            TipoParqueaderoId = item.TipoParqueaderoId,
+            EstadoParqueaderoId = item.EstadoParqueaderoId,
+            Numero = item.Numero
+        };
+
+        tituloFormulario = "Editar Parqueadero";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+        if (modelo.Id == 0)
+        {
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+        }
+        else
+        {
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.UnidadId = modelo.UnidadId;
+            registro.TipoParqueaderoId = modelo.TipoParqueaderoId;
+            registro.EstadoParqueaderoId = modelo.EstadoParqueaderoId;
+            registro.Numero = modelo.Numero;
+        }
+
+        mostrarForm = false;
+    }
+
+    void Eliminar(int id)
+    {
+        lista.Remove(lista.First(x => x.Id == id));
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ParqueaderoVM
+    {
+        public int Id { get; set; }
+        public string UnidadId { get; set; }
+        public string TipoParqueaderoId { get; set; }
+        public string EstadoParqueaderoId { get; set; }
+        public string Numero { get; set; }
+    }
+}

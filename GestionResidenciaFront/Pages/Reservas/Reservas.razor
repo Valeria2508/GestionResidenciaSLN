@@ -1,0 +1,206 @@
+﻿@page "/reservas"
+
+<h3>Reservas</h3>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    Nuevo Registro
+</button>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ZonaComun</th>
+            <th>UsuarioId</th>
+            <th>EstadoReservaId</th>
+            <th>Fecha</th>
+            <th>HoraInicio</th>
+            <th>HoraFin</th>
+            <th>Observaciones</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.ZOnaComun</td>
+                <td>@item.UsuarioId</td>
+                <td>@item.EstadoReservaId</td>
+                <td>@item.Fecha</td>
+                <td>@item.HoraInicio</td>
+                <td>@item.HoraFin</td>
+                <td>@item.Observaciones</td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, ZOnaComun="Gym", UsuarioId="1", EstadoReservaId="ocupado", Fecha="hoy", HoraInicio="2pm", HoraFin="3pm" });
+       
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            ZOnaComun = item.ZOnaComun,
+            UsuarioId = item.UsuarioId,
+            EstadoReservaId = item.EstadoReservaId,
+            Fecha = item.Fecha,
+            HoraInicio = item.HoraInicio,
+            HoraFin = item.HoraFin,
+            Observaciones = item.Observaciones
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.ZOnaComun = modelo.ZOnaComun;
+            registro.UsuarioId = modelo.UsuarioId;
+            registro.EstadoReservaId = modelo.EstadoReservaId;
+            registro.Fecha = modelo.Fecha;
+            registro.HoraInicio = modelo.HoraInicio;
+            registro.HoraFin = modelo.HoraFin;
+            registro.Observaciones = modelo.Observaciones;
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+
+        public string ZOnaComun { get; set; }
+
+        public string UsuarioId { get; set; }
+        public string EstadoReservaId { get; set; }
+        public string Fecha { get; set; }
+        public string HoraInicio { get; set; }
+        public string HoraFin { get; set; }
+        public string Observaciones { get; set; }
+
+    }
+
+}

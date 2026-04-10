@@ -1,0 +1,221 @@
+﻿@page "/Ingresos"
+
+<h3>Ingresos</h3>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    Nuevo Registro
+</button>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>TipoIngresoId</th>
+            <th>UsuarioId</th>
+            <th>UnidadId</th>
+            <th>VisitanteId</th>
+            <th>NombrePersona</th>
+            <th>Documento</th>
+            <th>Vehiculo</th>
+            <th>FechaHoraIngreso</th>
+            <th>FechaHoraSalida</th>
+            <th>Observacion</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.UsuarioId</td>
+                <td>@item.UnidadId</td>
+                <td>@item.VisitanteId</td>
+                <td>@item.NombrePersona</td>
+                <td>@item.Documento</td>
+                <td>@item.Vehiculo</td>
+                <td>@item.FechaHoraIngreso</td>
+                <td>@item.FechaHoraSalida</td>
+                <td>@item.Observacion</td>
+
+
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, TipoIngresoId=" 1", UsuarioId="1", UnidadId="1", VisitanteId="2", NombrePersona="pedro", Documento="123", Vehiculo="masda", FechaHoraIngreso="3pm", FechaHoraSalida="7pm", Observacion="hahaha" });
+        lista.Add(new ItemVM { Id = 2, TipoIngresoId = " 1", UsuarioId = "1", UnidadId = "1", VisitanteId = "2", NombrePersona = "pedro", Documento = "123", Vehiculo = "masda", FechaHoraIngreso = "3pm", FechaHoraSalida = "7pm", Observacion = "hahaha" });
+        lista.Add(new ItemVM { Id = 3, TipoIngresoId = " 1", UsuarioId = "1", UnidadId = "1", VisitanteId = "2", NombrePersona = "pedro", Documento = "123", Vehiculo = "masda", FechaHoraIngreso = "3pm", FechaHoraSalida = "7pm", Observacion = "hahaha" });
+        
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            TipoIngresoId = item.TipoIngresoId,
+            UsuarioId = item.UsuarioId,
+            UnidadId = item.UnidadId,
+            VisitanteId = item.VisitanteId,
+            NombrePersona = item.NombrePersona,
+            Documento = item.Documento,
+            Vehiculo = item.Vehiculo,
+            FechaHoraIngreso = item.FechaHoraIngreso,
+            FechaHoraSalida = item.FechaHoraSalida,
+            Observacion = item.Observacion
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.TipoIngresoId = modelo.TipoIngresoId;
+            registro.UsuarioId = modelo.UsuarioId;
+            registro.UnidadId = modelo.UnidadId;
+            registro.VisitanteId = modelo.VisitanteId;
+            registro.NombrePersona = modelo.NombrePersona;
+            registro.Documento = modelo.Documento;
+            registro.Vehiculo = modelo.Vehiculo;
+            registro.FechaHoraIngreso = modelo.FechaHoraIngreso;
+            registro.FechaHoraSalida = modelo.FechaHoraSalida;
+            registro.Observacion = modelo.Observacion;
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+        public string TipoIngresoId { get; set; }
+        public string UsuarioId { get; set; }
+        public string UnidadId { get; set; }
+        public string VisitanteId { get; set; }
+        public string NombrePersona { get; set; }
+        public string Documento { get; set; }
+        public string Vehiculo { get; set; }
+        public string FechaHoraIngreso { get; set; }
+        public string FechaHoraSalida { get; set; }
+        public string Observacion { get; set; }
+
+    }
+
+}

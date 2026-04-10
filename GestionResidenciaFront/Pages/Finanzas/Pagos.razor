@@ -1,0 +1,203 @@
+﻿@page "/pagos"
+
+<h3>Pagos</h3>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    Nuevo Registro
+</button>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>UsuarioId</th>
+            <th>MetodoPagoId</th>
+            <th>Fechadepago</th>
+            <th>ValorTotal</th>
+            <th>Referencia</th>
+            <th>Observacion</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.UsuarioId</td>
+                <td>@item.MetodoPagoId</td>
+                <td>@item.fechaPago</td>
+                <td>@item.ValorTotal</td>
+                <td>@item.Referencia</td>
+                <td>@item.Observacion</td>
+                <td>@item.Referencia</td>
+                <td>@item.Observacion</td>
+
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, UsuarioId="1", MetodoPagoId="1", fechaPago="2024-03", ValorTotal="20000", Referencia="alquiler", Observacion="gracias" });
+        lista.Add(new ItemVM { Id = 2, UsuarioId = "2", MetodoPagoId = "2", fechaPago = "2024-03", ValorTotal = "15000", Referencia = "alquiler", Observacion = "gracias" });
+        lista.Add(new ItemVM { Id = 3, UsuarioId = "3", MetodoPagoId = "3", fechaPago = "2024-03", ValorTotal = "10000", Referencia = "alquiler", Observacion = "gracias" });
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            UsuarioId = item.UsuarioId,
+            MetodoPagoId = item.MetodoPagoId,
+            fechaPago = item.fechaPago,
+            ValorTotal = item.ValorTotal,
+            Referencia = item.Referencia,
+            Observacion = item.Observacion
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.UsuarioId = modelo.UsuarioId;
+            registro.MetodoPagoId = modelo.MetodoPagoId;
+            registro.fechaPago = modelo.fechaPago;
+            registro.ValorTotal = modelo.ValorTotal;
+            registro.Referencia = modelo.Referencia;
+            registro.Observacion = modelo.Observacion;
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+
+        public string UsuarioId { get; set; }
+
+        public string MetodoPagoId { get; set; }
+        public string fechaPago { get; set; }
+        public string ValorTotal { get; set; }
+        public string Referencia { get; set; }
+        public string Observacion { get; set; }  
+    }
+
+}

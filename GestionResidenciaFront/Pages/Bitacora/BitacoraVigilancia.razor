@@ -1,0 +1,195 @@
+﻿@page "/bitacoraVigilancia"
+
+<h3>Bitácora</h3>
+
+<button class="btn btn-primary mb-3" @onclick="Nuevo">
+    Nuevo Registro
+</button>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>TipoEventoId</th>
+            <th>Descripción</th>
+            <th>UsuarioId</th>
+        </tr>
+    </thead>    
+
+    <tbody>
+
+        @foreach (var item in lista)
+        {
+            <tr>
+
+                <td>@item.Id</td>
+                <td>@item.Fecha</td>
+                <td>@item.Hora</td>
+                <td>@item.TipoEventoId</td>
+                <td>@item.Descripcion</td>
+                <td>@item.UsuarioId</td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="(()=>Editar(item))">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="(()=>Eliminar(item.Id))">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@if (mostrarForm)
+{
+
+    <div class="card p-3 mt-3">
+
+        <h5>@tituloFormulario</h5>
+
+        <div class="mb-2">
+
+            <label>Nombre</label>
+
+            <input class="form-control"
+                   @bind="modelo.Nombre" />
+
+        </div>
+
+        <div class="mb-2">
+
+            <label>Estado</label>
+
+            <select class="form-control"
+                    @bind="modelo.Estado">
+
+                <option>Activo</option>
+                <option>Inactivo</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success"
+                @onclick="Guardar">
+            Guardar
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+    </div>
+
+}
+
+@code {
+
+    List<ItemVM> lista = new();
+
+    ItemVM modelo = new();
+
+    bool mostrarForm = false;
+
+    string tituloFormulario = "";
+
+    protected override void OnInitialized()
+    {
+
+        lista.Add(new ItemVM { Id = 1, Fecha="2023-03-01",Hora="8:00am", TipoEventoId="1", Descripcion="Ingreso de residente", UsuarioId="1" });
+        lista.Add(new ItemVM { Id = 2, Fecha = "2023-03-01", Hora = "9:00am", TipoEventoId = "2", Descripcion = "Salida de visitante", UsuarioId = "2" });
+        lista.Add(new ItemVM { Id = 3, Fecha = "2023-03-01", Hora = "10:00am", TipoEventoId = "3", Descripcion = "Visita Autorizada por apartamento 101", UsuarioId = "2" });
+
+    }
+
+    void Nuevo()
+    {
+        modelo = new ItemVM();
+        tituloFormulario = "Nuevo Registro";
+        mostrarForm = true;
+    }
+
+    void Editar(ItemVM item)
+    {
+        modelo = new ItemVM
+        {
+            Id = item.Id,
+            Fecha = item.Fecha,
+            Hora = item.Hora,
+            TipoEventoId = item.TipoEventoId,
+            Descripcion = item.Descripcion,
+            UsuarioId = item.UsuarioId
+        };
+
+        tituloFormulario = "Editar Registro";
+        mostrarForm = true;
+    }
+
+    void Guardar()
+    {
+
+        if (modelo.Id == 0)
+        {
+
+            modelo.Id = lista.Count + 1;
+            lista.Add(modelo);
+
+        }
+        else
+        {
+
+            var registro = lista.First(x => x.Id == modelo.Id);
+
+            registro.Fecha = modelo.Fecha;
+            registro.Hora = modelo.Hora;
+            registro.TipoEventoId = modelo.TipoEventoId;
+            registro.Descripcion = modelo.Descripcion;
+            registro.UsuarioId = modelo.UsuarioId;
+
+        }
+
+        mostrarForm = false;
+
+    }
+
+    void Eliminar(int id)
+    {
+
+        var registro = lista.First(x => x.Id == id);
+
+        lista.Remove(registro);
+
+    }
+
+    void Cancelar()
+    {
+        mostrarForm = false;
+    }
+
+    public class ItemVM
+    {
+        public int Id { get; set; }
+
+        public string Fecha { get; set; }
+
+        public string Hora { get; set; }
+        public string TipoEventoId { get; set; }
+        public string Descripcion { get; set; }
+        public string UsuarioId { get; set; }
+    }
+
+}
