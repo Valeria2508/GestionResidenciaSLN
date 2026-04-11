@@ -17,7 +17,7 @@ namespace GestionResidenciaApi.Controllers
 
         // GET: api/Apartamentos
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<IEnumerable<GestionResidenciaApi.Models.Apartamentos>>> GetApartamentos()
         {
             var apartamentos = await _apartamentosService.GetApartamentosAsync();
@@ -26,7 +26,7 @@ namespace GestionResidenciaApi.Controllers
  
         // GET: api/Apartamentos por id/
         [HttpGet("{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<GestionResidenciaApi.Models.Apartamentos>>GetApartamentos(int id)
         {
             var apartamento = await _apartamentosService.GetApartamentoByIdAsync(id);
@@ -36,7 +36,7 @@ namespace GestionResidenciaApi.Controllers
 
         // POST: api/Apartamentos
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<GestionResidenciaApi.Models.Apartamentos>> CreateApartamento(GestionResidenciaApi.Models.Apartamentos apartamento)
         {
             var createdApartamento = await _apartamentosService.CreateApartamentoAsync(apartamento);
@@ -45,7 +45,7 @@ namespace GestionResidenciaApi.Controllers
 
         // PUT: api/Apartamentos/5
         [HttpPut("{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<GestionResidenciaApi.Models.Apartamentos>> UpdateApartamento(int id, GestionResidenciaApi.Models.Apartamentos apartamento)
         {
             var updatedApartamento = await _apartamentosService.UpdateApartamentoAsync(id, apartamento);

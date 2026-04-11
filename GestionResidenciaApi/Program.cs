@@ -5,7 +5,7 @@ using Microsoft.OpenApi.Models;
 using GestionResidenciaApi.Data;
 using GestionResidenciaApi.Models;
 using GestionResidenciaApi.Services;
-
+//using GestionResidenciaApi.Services.ApartamentosService;
 var builder = WebApplication.CreateBuilder(args);
 
 // configurar servicios
@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
 });
 
 // register services implementations
-//builder.Services.AddScoped<IApartamentos, Apartamentos>();
+builder.Services.AddScoped<IApartamentos, ApartamentosService>();
 //builder.Services.AddScoped<IAuditoriaLogin, AuditoriaLoginService>();
 //builder.Services.AddScoped<IBitacoraVigilancia, BitacoraVigilanciaService>();
 //builder.Services.AddScoped<IConjunto, Conjunto>();
@@ -119,11 +119,10 @@ builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");

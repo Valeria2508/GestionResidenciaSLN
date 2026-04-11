@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
 {
-    public class Apartamentos:IApartamentos
+    public class ApartamentosService:IApartamentos
     {
         private readonly ApplicationDbContext _context;
 
-        public Apartamentos(ApplicationDbContext context)
+        public ApartamentosService(ApplicationDbContext context)
         {
             _context = context;
         }
