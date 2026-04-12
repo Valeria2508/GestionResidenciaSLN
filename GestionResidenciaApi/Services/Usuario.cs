@@ -13,24 +13,24 @@ namespace GestionResidenciaApi.Services
             _context = context;
         }
 
-        public async Task<List<GestionResidenciaApi.Models.Usuario>> GetUsuarioAsync()
+        public async Task<List<Usuario>> GetUsuarioAsync()
         {
-            return await _context.Usuario.ToListAsync();
+            return await _context.Usuario.Include(u => u.Rol).Include(u => u.Persona).ToListAsync();
         }
 
-        public async Task<GestionResidenciaApi.Models.Usuario?> GetUsuarioByIdAsync(int id)
+        public async Task<Usuario?> GetUsuarioByIdAsync(int id)
         {
-            return await _context.Usuario.FindAsync(id);
+            return await _context.Usuario.Include(u => u.Rol).Include(u => u.Persona).FirstOrDefaultAsync(u => u.UsuarioId == id);
         }
 
-        public async Task<GestionResidenciaApi.Models.Usuario> CreateUsuarioAsync(GestionResidenciaApi.Models.Usuario usuario)
+        public async Task<Usuario> CreateUsuarioAsync(Usuario usuario)
         {
             await _context.Usuario.AddAsync(usuario);
             await _context.SaveChangesAsync();
             return usuario;
         }
 
-        public async Task<GestionResidenciaApi.Models.Usuario?> UpdateUsuarioAsync(int id, GestionResidenciaApi.Models.Usuario usuario)
+        public async Task<Usuario?> UpdateUsuarioAsync(int id, Usuario usuario)
         {
             var existente = await _context.Usuario.FindAsync(id);
             if (existente == null)

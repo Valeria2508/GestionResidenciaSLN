@@ -4,10 +4,10 @@ namespace GestionResidenciaApi.Services
 {
     public interface IUsuario
     {
-        Task<List<GestionResidenciaApi.Models.Usuario>> GetUsuarioAsync();
-        Task<GestionResidenciaApi.Models.Usuario> GetUsuarioByIdAsync(int id);
-        Task<GestionResidenciaApi.Models.Usuario> CreateUsuarioAsync(GestionResidenciaApi.Models.Usuario usuario);
-        Task<GestionResidenciaApi.Models.Usuario> UpdateUsuarioAsync(int id, GestionResidenciaApi.Models.Usuario usuario);
+        Task<List<Usuario>> GetUsuarioAsync();
+        Task<Usuario?> GetUsuarioByIdAsync(int id);
+        Task<Usuario> CreateUsuarioAsync(Usuario usuario);
+        Task<Usuario?> UpdateUsuarioAsync(int id, Usuario usuario);
         Task<bool> DeleteUsuarioAsync(int id);
     }
 }

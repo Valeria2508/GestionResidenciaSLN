@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GestionResidenciaApi.Models
 {
@@ -12,5 +13,9 @@ namespace GestionResidenciaApi.Models
         public decimal ValorTotal { get; set; }
         public string Referencia { get; set; }
         public string PagoObservacionId { get; set; }
+
+        public Usuario Usuario { get; set; } = null!;
+        public MetodoPago MetodoPago { get; set; } = null!;
+        public ICollection<PagoDetalle> PagoDetalles { get; set; } = new List<PagoDetalle>();
     }
 }

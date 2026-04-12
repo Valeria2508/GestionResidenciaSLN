@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GestionResidenciaApi.Models
 {
@@ -11,5 +12,8 @@ namespace GestionResidenciaApi.Models
         public string Ciudad { get; set; }
         public string NIT { get; set; }
         public string Telefono { get; set; }
+
+        public ICollection<Torre> Torres { get; set; } = new List<Torre>();
+        public ICollection<ZonaComun> ZonasComunes { get; set; } = new List<ZonaComun>();
     }
 }

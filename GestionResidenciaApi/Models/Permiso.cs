@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GestionResidenciaApi.Models
 {
@@ -7,5 +8,7 @@ namespace GestionResidenciaApi.Models
         [Key]
         public int PermisoId { get; set; }
         public string Nombre { get; set; }
+
+        public ICollection<RolPermiso> RolPermisos { get; set; } = new List<RolPermiso>();
     }
 }

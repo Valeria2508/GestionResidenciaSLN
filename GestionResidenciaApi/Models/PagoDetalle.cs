@@ -9,5 +9,8 @@ namespace GestionResidenciaApi.Models
         public int PagoId { get; set; }
         public int CuotaId { get; set; }
         public decimal ValorAbonado { get; set; }
+
+        public Pago Pago { get; set; } = null!;
+        public CuotaAdministracion Cuota { get; set; } = null!;
     }
 }

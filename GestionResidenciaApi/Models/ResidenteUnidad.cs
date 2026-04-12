@@ -12,5 +12,8 @@ namespace GestionResidenciaApi.Models
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
         public string Observacion { get; set; }
+
+        public Usuario Usuario { get; set; } = null!;
+        public Apartamentos Unidad { get; set; } = null!;
     }
 }

@@ -11,5 +11,8 @@ namespace GestionResidenciaApi.Models
         public string Placa { get; set; }
         public DateTime FechaHoraIngreso { get; set; }
         public DateTime FechaHoraSalida { get; set; }
+
+        public Parqueadero Parqueadero { get; set; } = null!;
+        public Ingreso Ingreso { get; set; } = null!;
     }
 }
