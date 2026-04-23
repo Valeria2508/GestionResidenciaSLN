@@ -19,36 +19,38 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
 // register services implementations
 builder.Services.AddScoped<IApartamentos, ApartamentosService>();
-//builder.Services.AddScoped<IAuditoriaLogin, AuditoriaLoginService>();
-//builder.Services.AddScoped<IBitacoraVigilancia, BitacoraVigilanciaService>();
-//builder.Services.AddScoped<IConjunto, Conjunto>();
-//builder.Services.AddScoped<ICuotaAdministracion, CuotaAdministracion>();
+builder.Services.AddScoped<IAuditoriaLogin, AuditoriaLoginService>();
+builder.Services.AddScoped<IBitacoraVigilancia, BitacoraVigilanciaService>();
+builder.Services.AddScoped<IConjunto, ConjuntoService>();
+builder.Services.AddScoped<ICuotaAdministracion, CuotaAdministracionService>();
 //builder.Services.AddScoped<IEmpleEstadoCuotaado, EmpleEstadoCuotaadoService>();
-//builder.Services.AddScoped<IEstadoParqueadero, EstadoParqueaderoService>();
-//builder.Services.AddScoped<IIngreso, IngresoService>();
-//builder.Services.AddScoped<IMantenimiento, MantenimientoService>();
-//builder.Services.AddScoped<IMensajeria, MensajeriaService>();
-//builder.Services.AddScoped<IMetodoPago, MetodoPagoService>();
-//builder.Services.AddScoped<IPago, PagoService>();
-//builder.Services.AddScoped<IPagoDetalle, PagoDetalleService>();
-//builder.Services.AddScoped<IParqueadero, ParqueaderoService>();
-//builder.Services.AddScoped<IParqueaderoVisitante, ParqueaderoVisitanteService>();
-//builder.Services.AddScoped<IPermiso, PermisoService>();
-//builder.Services.AddScoped<IPersona, PersonaService>();
-//builder.Services.AddScoped<IReserva, ReservaService>();
-//builder.Services.AddScoped<IResidenteUnidad, ResidenteUnidadService>();
-//builder.Services.AddScoped<IRol, RolService>();
-//builder.Services.AddScoped<IRolPermiso, RolPermisoService>();
-//builder.Services.AddScoped<ITipoEvento, TipoEventoService>();
-//builder.Services.AddScoped<ITipoIngreso, TipoIngresoService>();
-//builder.Services.AddScoped<ITipoMantenimiento, TipoMantenimientoService>();
-//builder.Services.AddScoped<ITipoParqueadero, TipoParqueaderoService>();
-//builder.Services.AddScoped<ITorre, TorreService>();
-//builder.Services.AddScoped<IUsuario, UsuarioService>();
-//builder.Services.AddScoped<IVisitante, VisitanteService>();
-//builder.Services.AddScoped<IZonaComun, ZonaComunService>();
+builder.Services.AddScoped<IEstado, EstadoService>();
+builder.Services.AddScoped<IIngreso, IngresoService>();
+builder.Services.AddScoped<IMantenimiento, MantenimientoService>();
+builder.Services.AddScoped<IMensajeria, MensajeriaService>();
+builder.Services.AddScoped<IMetodoPago, MetodoPagoService>();
+builder.Services.AddScoped<IPago, PagoService>();
+builder.Services.AddScoped<IPagoDetalle, PagoDetalleService>();
+builder.Services.AddScoped<IParqueadero, ParqueaderoService>();
+builder.Services.AddScoped<IParqueaderoVisitante, ParqueaderoVisitanteService>();
+builder.Services.AddScoped<IPermiso, PermisoService>();
+builder.Services.AddScoped<IPersona, PersonaService>();
+builder.Services.AddScoped<IReserva, ReservaService>();
+builder.Services.AddScoped<IResidenteUnidad, ResidenteUnidadService>();
+builder.Services.AddScoped<IRol, RolService>();
+builder.Services.AddScoped<IRolPermiso, RolPermisoService>();
+builder.Services.AddScoped<ITipoEvento, TipoEventoService>();
+builder.Services.AddScoped<ITipoIngreso, TipoIngresoService>();
+builder.Services.AddScoped<ITipoMantenimiento, TipoMantenimientoService>();
+builder.Services.AddScoped<ITipoParqueadero, TipoParqueaderoService>();
+builder.Services.AddScoped<ITorre, TorreService>();
+builder.Services.AddScoped<IUsuario, UsuarioService>();
+builder.Services.AddScoped<IVisitante, VisitanteService>();
+builder.Services.AddScoped<IZonaComun, ZonaComunService>();
 
 //for authentication
 var _key = builder.Configuration["Jwt:Key"];
@@ -61,7 +63,7 @@ var _expireMinutes =builder.Configuration["Jwt:ExpireMinutes"];
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
+    
 //configurar jwt
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
@@ -120,7 +122,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-
+app.UseDeveloperExceptionPage();
 app.UseSwagger();
 app.UseSwaggerUI();
 

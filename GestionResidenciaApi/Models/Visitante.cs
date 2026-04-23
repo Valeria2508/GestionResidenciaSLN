@@ -11,5 +11,8 @@ namespace GestionResidenciaApi.Models
         public string Documento { get; set; }
         public string Telefono { get; set; }
         public DateTime FechaRegistro { get; set; }
+
+        public ICollection<Ingreso> Ingresos { get; set; } = new List<Ingreso>();
+        public ICollection<ParqueaderoVisitante> ParqueaderoVisitantes { get; set; } = new List<ParqueaderoVisitante>();
     }
 }

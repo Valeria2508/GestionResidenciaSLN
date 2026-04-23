@@ -46,6 +46,8 @@ namespace GestionResidenciaApi.Migrations
 
                     b.HasKey("UnidadId");
 
+                    b.HasIndex("TorreId");
+
                     b.ToTable("Apartamentos");
                 });
 
@@ -80,6 +82,8 @@ namespace GestionResidenciaApi.Migrations
 
                     b.HasKey("AuditoriaId");
 
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("AuditoriaLogin");
                 });
 
@@ -111,6 +115,14 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("BitacoraId");
+
+                    b.HasIndex("IngresoId");
+
+                    b.HasIndex("TipoEventoId");
+
+                    b.HasIndex("UnidadId");
+
+                    b.HasIndex("VigilanteId");
 
                     b.ToTable("BitacoraVigilancia");
                 });
@@ -156,7 +168,7 @@ namespace GestionResidenciaApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CuotaId"));
 
-                    b.Property<int>("EstadoCuotaId")
+                    b.Property<int>("EstadoId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("FechaLimite")
@@ -169,44 +181,33 @@ namespace GestionResidenciaApi.Migrations
                     b.Property<DateOnly>("Periodo")
                         .HasColumnType("date");
 
-                    b.Property<DateTime>("SaldoPendiente")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal>("SaldoPendiente")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("UnidadId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Valor")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("CuotaId");
 
+                    b.HasIndex("EstadoId");
+
+                    b.HasIndex("UnidadId");
+
                     b.ToTable("CuotaAdministracion");
                 });
 
-            modelBuilder.Entity("GestionResidenciaApi.Models.EstadoCuota", b =>
+            modelBuilder.Entity("GestionResidenciaApi.Models.Estado", b =>
                 {
-                    b.Property<int>("EstadoCuotaId")
+                    b.Property<int>("EstadoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstadoCuotaId"));
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("EstadoCuotaId");
-
-                    b.ToTable("EmpleEstadoCuotaado");
-                });
-
-            modelBuilder.Entity("GestionResidenciaApi.Models.EstadoParqueadero", b =>
-                {
-                    b.Property<int>("EstadoParqueaderoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstadoParqueaderoId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstadoId"));
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
@@ -216,9 +217,13 @@ namespace GestionResidenciaApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("EstadoParqueaderoId");
+                    b.Property<string>("TipoEstado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("EstadoParqueadero");
+                    b.HasKey("EstadoId");
+
+                    b.ToTable("Estado");
                 });
 
             modelBuilder.Entity("GestionResidenciaApi.Models.Ingreso", b =>
@@ -265,6 +270,14 @@ namespace GestionResidenciaApi.Migrations
 
                     b.HasKey("IngresoId");
 
+                    b.HasIndex("TipoIngresoId");
+
+                    b.HasIndex("UnidadId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.HasIndex("VisitanteId");
+
                     b.ToTable("Ingreso");
                 });
 
@@ -277,6 +290,7 @@ namespace GestionResidenciaApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MantenimientoId"));
 
                     b.Property<decimal>("Costo")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Descripcion")
@@ -300,6 +314,12 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("MantenimientoId");
+
+                    b.HasIndex("TipoMantenimientoId");
+
+                    b.HasIndex("UnidadId");
+
+                    b.HasIndex("ZonaComunId");
 
                     b.ToTable("Mantenimiento");
                 });
@@ -337,6 +357,10 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("MensajeriaId");
+
+                    b.HasIndex("UnidadId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Mensajeria");
                 });
@@ -388,9 +412,14 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("ValorTotal")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("PagoId");
+
+                    b.HasIndex("MetodoPagoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Pago");
                 });
@@ -410,9 +439,14 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("ValorAbonado")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("PagoDetalleId");
+
+                    b.HasIndex("CuotaId");
+
+                    b.HasIndex("PagoId");
 
                     b.ToTable("PagoDetalle");
                 });
@@ -425,7 +459,7 @@ namespace GestionResidenciaApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ParqueaderoId"));
 
-                    b.Property<int>("EstadoParqueaderoId")
+                    b.Property<int>("EstadoId")
                         .HasColumnType("int");
 
                     b.Property<string>("Numero")
@@ -439,6 +473,12 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ParqueaderoId");
+
+                    b.HasIndex("EstadoId");
+
+                    b.HasIndex("TipoParqueaderoId");
+
+                    b.HasIndex("UnidadId");
 
                     b.ToTable("Parqueadero");
                 });
@@ -467,7 +507,16 @@ namespace GestionResidenciaApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("VisitanteId")
+                        .HasColumnType("int");
+
                     b.HasKey("ParqueaderoVisitanteId");
+
+                    b.HasIndex("IngresoId");
+
+                    b.HasIndex("ParqueaderoId");
+
+                    b.HasIndex("VisitanteId");
 
                     b.ToTable("ParqueaderoVisitante");
                 });
@@ -530,7 +579,7 @@ namespace GestionResidenciaApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservaId"));
 
-                    b.Property<int>("EstadoReservaId")
+                    b.Property<int>("EstadoId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Fecha")
@@ -553,6 +602,12 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ReservaId");
+
+                    b.HasIndex("EstadoId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.HasIndex("ZonaComunId");
 
                     b.ToTable("Reserva");
                 });
@@ -586,6 +641,10 @@ namespace GestionResidenciaApi.Migrations
 
                     b.HasKey("ResidenteUnidadId");
 
+                    b.HasIndex("UnidadId");
+
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("ResidenteUnidad");
                 });
 
@@ -609,15 +668,14 @@ namespace GestionResidenciaApi.Migrations
             modelBuilder.Entity("GestionResidenciaApi.Models.RolPermiso", b =>
                 {
                     b.Property<int>("RolId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RolId"));
 
                     b.Property<int>("PermisoId")
                         .HasColumnType("int");
 
-                    b.HasKey("RolId");
+                    b.HasKey("RolId", "PermisoId");
+
+                    b.HasIndex("PermisoId");
 
                     b.ToTable("RolPermiso");
                 });
@@ -707,6 +765,8 @@ namespace GestionResidenciaApi.Migrations
 
                     b.HasKey("TorreId");
 
+                    b.HasIndex("ConjuntoId");
+
                     b.ToTable("Torre");
                 });
 
@@ -739,6 +799,10 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UsuarioId");
+
+                    b.HasIndex("PersonaId");
+
+                    b.HasIndex("RolId");
 
                     b.ToTable("Usuario");
                 });
@@ -797,11 +861,491 @@ namespace GestionResidenciaApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("ValorHora")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ZonaComunId");
 
+                    b.HasIndex("ConjuntoId");
+
                     b.ToTable("ZonaComun");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Apartamentos", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Torre", "Torre")
+                        .WithMany("Apartamentos")
+                        .HasForeignKey("TorreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Torre");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.AuditoriaLogin", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Usuario", "Usuario")
+                        .WithMany("Auditorias")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.BitacoraVigilancia", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Ingreso", "Ingreso")
+                        .WithMany("Bitacoras")
+                        .HasForeignKey("IngresoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.TipoEvento", "TipoEvento")
+                        .WithMany("Bitacoras")
+                        .HasForeignKey("TipoEventoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Apartamentos", "Unidad")
+                        .WithMany()
+                        .HasForeignKey("UnidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Usuario", "Vigilante")
+                        .WithMany("Vigilancias")
+                        .HasForeignKey("VigilanteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingreso");
+
+                    b.Navigation("TipoEvento");
+
+                    b.Navigation("Unidad");
+
+                    b.Navigation("Vigilante");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.CuotaAdministracion", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Estado", "Estado")
+                        .WithMany("Cuotas")
+                        .HasForeignKey("EstadoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Apartamentos", "Unidad")
+                        .WithMany("Cuotas")
+                        .HasForeignKey("UnidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Estado");
+
+                    b.Navigation("Unidad");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Ingreso", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.TipoIngreso", "TipoIngreso")
+                        .WithMany("Ingresos")
+                        .HasForeignKey("TipoIngresoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Apartamentos", "Unidad")
+                        .WithMany("Ingresos")
+                        .HasForeignKey("UnidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Usuario", "Usuario")
+                        .WithMany("Ingresos")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Visitante", "Visitante")
+                        .WithMany("Ingresos")
+                        .HasForeignKey("VisitanteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TipoIngreso");
+
+                    b.Navigation("Unidad");
+
+                    b.Navigation("Usuario");
+
+                    b.Navigation("Visitante");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Mantenimiento", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.TipoMantenimiento", "TipoMantenimiento")
+                        .WithMany("Mantenimientos")
+                        .HasForeignKey("TipoMantenimientoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Apartamentos", "Unidad")
+                        .WithMany("Mantenimientos")
+                        .HasForeignKey("UnidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.ZonaComun", "ZonaComun")
+                        .WithMany("Mantenimientos")
+                        .HasForeignKey("ZonaComunId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TipoMantenimiento");
+
+                    b.Navigation("Unidad");
+
+                    b.Navigation("ZonaComun");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Mensajeria", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Apartamentos", "Unidad")
+                        .WithMany("Mensajerias")
+                        .HasForeignKey("UnidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Usuario", "Usuario")
+                        .WithMany("Mensajerias")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Unidad");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Pago", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.MetodoPago", "MetodoPago")
+                        .WithMany("Pagos")
+                        .HasForeignKey("MetodoPagoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Usuario", "Usuario")
+                        .WithMany("Pagos")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MetodoPago");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.PagoDetalle", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.CuotaAdministracion", "Cuota")
+                        .WithMany("PagoDetalles")
+                        .HasForeignKey("CuotaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Pago", "Pago")
+                        .WithMany("PagoDetalles")
+                        .HasForeignKey("PagoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cuota");
+
+                    b.Navigation("Pago");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Parqueadero", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Estado", "Estado")
+                        .WithMany("Parqueaderos")
+                        .HasForeignKey("EstadoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.TipoParqueadero", "TipoParqueadero")
+                        .WithMany("Parqueaderos")
+                        .HasForeignKey("TipoParqueaderoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Apartamentos", "Unidad")
+                        .WithMany("Parqueaderos")
+                        .HasForeignKey("UnidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Estado");
+
+                    b.Navigation("TipoParqueadero");
+
+                    b.Navigation("Unidad");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.ParqueaderoVisitante", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Ingreso", "Ingreso")
+                        .WithMany("ParqueaderoVisitantes")
+                        .HasForeignKey("IngresoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Parqueadero", "Parqueadero")
+                        .WithMany("ParqueaderoVisitantes")
+                        .HasForeignKey("ParqueaderoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Visitante", null)
+                        .WithMany("ParqueaderoVisitantes")
+                        .HasForeignKey("VisitanteId");
+
+                    b.Navigation("Ingreso");
+
+                    b.Navigation("Parqueadero");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Reserva", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Estado", "Estado")
+                        .WithMany("Reservas")
+                        .HasForeignKey("EstadoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Usuario", "Usuario")
+                        .WithMany("Reservas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.ZonaComun", "ZonaComun")
+                        .WithMany("Reservas")
+                        .HasForeignKey("ZonaComunId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Estado");
+
+                    b.Navigation("Usuario");
+
+                    b.Navigation("ZonaComun");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.ResidenteUnidad", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Apartamentos", "Unidad")
+                        .WithMany("Residentes")
+                        .HasForeignKey("UnidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Usuario", "Usuario")
+                        .WithMany("ResidenteUnidades")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Unidad");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.RolPermiso", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Permiso", "Permiso")
+                        .WithMany("RolPermisos")
+                        .HasForeignKey("PermisoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Rol", "Rol")
+                        .WithMany("RolPermisos")
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permiso");
+
+                    b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Torre", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Conjunto", "Conjunto")
+                        .WithMany("Torres")
+                        .HasForeignKey("ConjuntoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conjunto");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Usuario", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Persona", "Persona")
+                        .WithMany()
+                        .HasForeignKey("PersonaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionResidenciaApi.Models.Rol", "Rol")
+                        .WithMany("Usuarios")
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Persona");
+
+                    b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.ZonaComun", b =>
+                {
+                    b.HasOne("GestionResidenciaApi.Models.Conjunto", "Conjunto")
+                        .WithMany("ZonasComunes")
+                        .HasForeignKey("ConjuntoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conjunto");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Apartamentos", b =>
+                {
+                    b.Navigation("Cuotas");
+
+                    b.Navigation("Ingresos");
+
+                    b.Navigation("Mantenimientos");
+
+                    b.Navigation("Mensajerias");
+
+                    b.Navigation("Parqueaderos");
+
+                    b.Navigation("Residentes");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Conjunto", b =>
+                {
+                    b.Navigation("Torres");
+
+                    b.Navigation("ZonasComunes");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.CuotaAdministracion", b =>
+                {
+                    b.Navigation("PagoDetalles");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Estado", b =>
+                {
+                    b.Navigation("Cuotas");
+
+                    b.Navigation("Parqueaderos");
+
+                    b.Navigation("Reservas");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Ingreso", b =>
+                {
+                    b.Navigation("Bitacoras");
+
+                    b.Navigation("ParqueaderoVisitantes");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.MetodoPago", b =>
+                {
+                    b.Navigation("Pagos");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Pago", b =>
+                {
+                    b.Navigation("PagoDetalles");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Parqueadero", b =>
+                {
+                    b.Navigation("ParqueaderoVisitantes");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Permiso", b =>
+                {
+                    b.Navigation("RolPermisos");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Rol", b =>
+                {
+                    b.Navigation("RolPermisos");
+
+                    b.Navigation("Usuarios");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.TipoEvento", b =>
+                {
+                    b.Navigation("Bitacoras");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.TipoIngreso", b =>
+                {
+                    b.Navigation("Ingresos");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.TipoMantenimiento", b =>
+                {
+                    b.Navigation("Mantenimientos");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.TipoParqueadero", b =>
+                {
+                    b.Navigation("Parqueaderos");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Torre", b =>
+                {
+                    b.Navigation("Apartamentos");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Usuario", b =>
+                {
+                    b.Navigation("Auditorias");
+
+                    b.Navigation("Ingresos");
+
+                    b.Navigation("Mensajerias");
+
+                    b.Navigation("Pagos");
+
+                    b.Navigation("Reservas");
+
+                    b.Navigation("ResidenteUnidades");
+
+                    b.Navigation("Vigilancias");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.Visitante", b =>
+                {
+                    b.Navigation("Ingresos");
+
+                    b.Navigation("ParqueaderoVisitantes");
+                });
+
+            modelBuilder.Entity("GestionResidenciaApi.Models.ZonaComun", b =>
+                {
+                    b.Navigation("Mantenimientos");
+
+                    b.Navigation("Reservas");
                 });
 #pragma warning restore 612, 618
         }

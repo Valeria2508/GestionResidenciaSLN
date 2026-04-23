@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using GestionResidenciaApi.Services;
+﻿using GestionResidenciaApi.DTOs;
 using GestionResidenciaApi.Models;
+using GestionResidenciaApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
 namespace GestionResidenciaApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class TorreController : ControllerBase
     {
         private readonly ITorre _torreService;
@@ -17,49 +20,82 @@ namespace GestionResidenciaApi.Controllers
 
         // GET: api/Torre
         [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<GestionResidenciaApi.Models.Torre>>> GetTorres()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Torre>>> GetTorre()
         {
             var torres = await _torreService.GetTorreAsync();
             return Ok(torres);
         }
 
-        // GET: api/Apartamentos por id/
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Torre>> GetTorre(int id)
+        // GET: api/Torre/5
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TorreCreateDTO>> GetTorreById(int id)
         {
             var torre = await _torreService.GetTorreByIdAsync(id);
-            if (torre is null) return NotFound();
-            return Ok(torre);
+
+            if (torre is null)
+                return NotFound(new { message = "Torre no encontrada" });
+
+            var dto = new TorreCreateDTO
+            {
+                TorreId = torre.TorreId,
+                Nombre = torre.Nombre,
+                ConjuntoId = torre.ConjuntoId
+            };
+
+            return Ok(dto);
         }
 
         // POST: api/Torre
         [HttpPost]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Torre>> CreateTorre(GestionResidenciaApi.Models.Torre torre)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost]
+        public async Task<ActionResult> Create(TorreCreateDTO dto)
         {
-            var createdTorre = await _torreService.CreateTorreAsync(torre);
-            return CreatedAtAction(nameof(GetTorre), new { id = createdTorre.TorreId }, createdTorre);
+            var torre = new Torre
+            {
+                ConjuntoId = dto.ConjuntoId,
+                Nombre = dto.Nombre
+            };
+
+            await _torreService.CreateTorreAsync(torre);
+
+            return Ok(torre);
         }
 
         // PUT: api/Torre/5
-        [HttpPut("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Torre>> UpdateTorre(int id, GestionResidenciaApi.Models.Torre torre)
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Torre>> UpdateTorre(int id, [FromBody] Torre torre)
         {
+            if (id != torre.TorreId)
+                return BadRequest(new { message = "El ID no coincide" });
+
             var updatedTorre = await _torreService.UpdateTorreAsync(id, torre);
-            if (updatedTorre is null) return NotFound();
+
+            if (updatedTorre is null)
+                return NotFound(new { message = "Torre no encontrada" });
+
             return Ok(updatedTorre);
         }
 
         // DELETE: api/Torre/5
-        [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Torre>> DeleteTorre(int id)
+        [HttpDelete("{id:int}")]
+        [Authorize] // puedes dejarlo o quitarlo para pruebas
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteTorre(int id)
         {
             var success = await _torreService.DeleteTorreAsync(id);
-            if (!success) return NotFound();
+
+            if (!success)
+                return NotFound(new { message = "Torre no encontrada" });
+
             return NoContent();
         }
     }

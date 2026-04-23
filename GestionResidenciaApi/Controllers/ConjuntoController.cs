@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using GestionResidenciaApi.Services;
+﻿using GestionResidenciaApi.DTOs;
 using GestionResidenciaApi.Models;
+using GestionResidenciaApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
 namespace GestionResidenciaApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class ConjuntoController : ControllerBase
     {
         private readonly IConjunto _conjuntoService;
@@ -17,49 +20,82 @@ namespace GestionResidenciaApi.Controllers
 
         // GET: api/Conjunto
         [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<GestionResidenciaApi.Models.Conjunto>>> GetConjunto()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Conjunto>>> GetConjunto()
         {
             var conjunto = await _conjuntoService.GetConjuntosAsync();
             return Ok(conjunto);
         }
 
-        // GET: api/Conjunto por id/
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Conjunto>> GetConjuntos(int id)
+        // GET: api/Conjunto/5
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ConjuntoCreateDTO>> GetConjuntoById(int id)
         {
             var conjunto = await _conjuntoService.GetConjuntoByIdAsync(id);
-            if (conjunto is null) return NotFound();
-            return Ok(conjunto);
+
+            if (conjunto is null)
+                return NotFound(new { message = "Conjunto no encontrado" });
+
+            var dto = new ConjuntoCreateDTO
+            {
+                ConjuntoId = conjunto.ConjuntoId,
+            };
+
+            return Ok(dto);
         }
 
         // POST: api/Conjunto
         [HttpPost]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Conjunto>> CreateConjunto(GestionResidenciaApi.Models.Conjunto conjunto)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Create(ConjuntoCreateDTO dto)
         {
-            var createdConjunto = await _conjuntoService.CreateConjuntoAsync(conjunto);
-            return CreatedAtAction(nameof(GetConjuntos), new { id = createdConjunto.ConjuntoId }, createdConjunto);
+            var conjunto = new Conjunto
+            {
+                Nombre = dto.Nombre,
+                Direccion = dto.Direccion,
+                Ciudad = dto.Ciudad,
+                NIT = dto.NIT,
+                Telefono = dto.Telefono
+            };
+
+            await _conjuntoService.CreateConjuntoAsync(conjunto);
+
+            return Ok(conjunto);
         }
 
         // PUT: api/Conjunto/5
-        [HttpPut("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Conjunto>> UpdateConjunto(int id, GestionResidenciaApi.Models.Conjunto conjunto)
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Conjunto>> UpdateConjunto(int id, [FromBody] Conjunto conjunto)
         {
+            if (id != conjunto.ConjuntoId)
+                return BadRequest(new { message = "El ID no coincide" });
+
             var updatedConjunto = await _conjuntoService.UpdateConjuntoAsync(id, conjunto);
-            if (updatedConjunto is null) return NotFound();
+
+            if (updatedConjunto is null)
+                return NotFound(new { message = "Conjunto no encontrado" });
+
             return Ok(updatedConjunto);
         }
 
         // DELETE: api/Conjunto/5
-        [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Conjunto>> DeleteConjunto(int id)
+        [HttpDelete("{id:int}")]
+        [Authorize] // puedes dejarlo o quitarlo para pruebas
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteConjunto(int id)
         {
             var success = await _conjuntoService.DeleteConjuntoAsync(id);
-            if (!success) return NotFound();
+
+            if (!success)
+                return NotFound(new { message = "Conjunto no encontrado" });
+
             return NoContent();
         }
     }

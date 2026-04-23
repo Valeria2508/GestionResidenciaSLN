@@ -18,25 +18,25 @@ namespace GestionResidenciaApi.Services
             return await _context.Apartamentos.ToListAsync();
         }
 
-        public async Task<GestionResidenciaApi.Models.Apartamentos?> GetApartamentoByIdAsync(int id)
+        public async Task<GestionResidenciaApi.Models.Apartamentos> GetApartamentoByIdAsync(int id)
         {
             return await _context.Apartamentos.FindAsync(id);
         }
 
         public async Task<GestionResidenciaApi.Models.Apartamentos> CreateApartamentoAsync(GestionResidenciaApi.Models.Apartamentos apartamento)
         {
-            await _context.Apartamentos.AddAsync(apartamento);
+            _context.Apartamentos.Add(apartamento);
             await _context.SaveChangesAsync();
             return apartamento;
         }
 
-        public async Task<GestionResidenciaApi.Models.Apartamentos?> UpdateApartamentoAsync(int id, GestionResidenciaApi.Models.Apartamentos apartamento)
+        public async Task<GestionResidenciaApi.Models.Apartamentos > UpdateApartamentoAsync(int id, GestionResidenciaApi.Models.Apartamentos apartamento)
         {
             var existente = await _context.Apartamentos.FindAsync(id);
             if (existente == null)
                 return null;
 
-            _context.Entry(existente).CurrentValues.SetValues(apartamento);
+            existente.Numero = apartamento.Numero;
             await _context.SaveChangesAsync();
             return existente;
         }

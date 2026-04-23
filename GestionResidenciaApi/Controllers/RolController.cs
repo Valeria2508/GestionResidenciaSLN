@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using GestionResidenciaApi.Services;
+﻿using GestionResidenciaApi.DTOs;
 using GestionResidenciaApi.Models;
+using GestionResidenciaApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
 namespace GestionResidenciaApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class RolController : ControllerBase
     {
         private readonly IRol _rolService;
@@ -15,51 +18,79 @@ namespace GestionResidenciaApi.Controllers
             _rolService = rolService;
         }
 
-        // GET: api/Rol
+        // GET: api/rol
         [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<GestionResidenciaApi.Models.Rol>>> GetRoles()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Rol>>> GetRol()
         {
-            var roles = await _rolService.GetRolAsync();
-            return Ok(roles);
-        }
-
-        // GET: api/Rol por id/
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Rol>> GetRol(int id)
-        {
-            var rol = await _rolService.GetRolByIdAsync(id);
-            if (rol is null) return NotFound();
+            var rol = await _rolService.GetRolAsync();
             return Ok(rol);
         }
 
-        // POST: api/Rol
-        [HttpPost]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Rol>> CreateRol(GestionResidenciaApi.Models.Rol rol)
+        // GET: api/rol/5
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<RolDTO>> GetRolById(int id)
         {
-            var createdRol = await _rolService.CreateRolAsync(rol);
-            return CreatedAtAction(nameof(GetRol), new { id = createdRol.RolId }, createdRol);
+            var rol = await _rolService.GetRolByIdAsync(id);
+
+            if (rol is null)
+                return NotFound(new { message = "Rol no encontrado" });
+
+            var dto = new RolDTO
+            {
+                RolId = rol.RolId
+            };
+
+            return Ok(dto);
+        }
+
+        // POST: api/rol
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Create([FromBody] RolDTO dto)
+        {
+            var rol = new Rol
+            {
+                Nombre = dto.Nombre
+            };
+
+            await _rolService.CreateRolAsync(rol);
+            return Ok(rol);
         }
 
         // PUT: api/Rol/5
-        [HttpPut("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Rol>> UpdateRol(int id, GestionResidenciaApi.Models.Rol rol)
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Rol>> UpdateRol(int id, [FromBody] Rol rol)
         {
+            if (id != rol.RolId)
+                return BadRequest(new { message = "El ID no coincide" });
+
             var updatedRol = await _rolService.UpdateRolAsync(id, rol);
-            if (updatedRol is null) return NotFound();
+
+            if (updatedRol is null)
+                return NotFound(new { message = "Rol no encontrado" });
+
             return Ok(updatedRol);
         }
 
         // DELETE: api/Rol/5
-        [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.Rol>> DeleteRol(int id)
+        [HttpDelete("{id:int}")]
+        [Authorize] // puedes dejarlo o quitarlo para pruebas
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteRol(int id)
         {
             var success = await _rolService.DeleteRolAsync(id);
-            if (!success) return NotFound();
+
+            if (!success)
+                return NotFound(new { message = "Rol no encontrado" });
+
             return NoContent();
         }
     }

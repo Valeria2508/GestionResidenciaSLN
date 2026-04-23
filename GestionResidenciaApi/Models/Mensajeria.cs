@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GestionResidenciaApi.Services;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionResidenciaApi.Models
 {
@@ -13,5 +15,8 @@ namespace GestionResidenciaApi.Models
         public string Descripcion { get; set; }
         public DateTime FechaRecepcion { get; set; }
         public DateTime FechaEntrega { get; set; }
+
+        public Apartamentos Unidad { get; set; } = null!;
+        public Usuario Usuario { get; set; } = null!;
     }
 }
