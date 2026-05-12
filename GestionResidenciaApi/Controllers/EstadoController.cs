@@ -40,7 +40,8 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new EstadoDTO
             {
-                EstadoId = estado.EstadoId
+                EstadoId = estado.EstadoId,
+                Nombre = estado.Nombre
             };
 
             return Ok(dto);

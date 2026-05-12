@@ -40,10 +40,11 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new BitacoraVigilanciaDTO
             {
-                VigilanteId = bitacoraVigilancia.VigilanteId,
                 TipoEventoId = bitacoraVigilancia.TipoEventoId,
+                VigilanteId = bitacoraVigilancia.VigilanteId,
                 IngresoId = bitacoraVigilancia.IngresoId,
-                UnidadId = bitacoraVigilancia.UnidadId
+                UnidadId = bitacoraVigilancia.UnidadId,
+                Observacion = bitacoraVigilancia.Observacion
             };
 
             return Ok(dto);
@@ -75,12 +76,12 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<BitacoraVigilancia>> UpdateBitacoraVigilancia(int id, [FromBody] BitacoraVigilancia bitacoraVigilancia)
+        public async Task<ActionResult<BitacoraVigilancia>> UpdateBitacoraVigilancia(int id, BitacoraVigilanciaDTO dto)
         {
-            if (id != bitacoraVigilancia.UnidadId)
-                return BadRequest(new { message = "El ID no coincide" });
+            if (dto == null)
+                return BadRequest(new { message = "Datos inválidos" });
 
-            var updatedBitacoraVigilancia = await _bitacoraVigilanciaService.UpdateBitacoraVigilanciaAsync(id, bitacoraVigilancia);
+            var updatedBitacoraVigilancia = await _bitacoraVigilanciaService.UpdateBitacoraVigilanciaAsync(id, dto);
 
             if (updatedBitacoraVigilancia is null)
                 return NotFound(new { message = "BitacoraVigilancia no encontrado" });

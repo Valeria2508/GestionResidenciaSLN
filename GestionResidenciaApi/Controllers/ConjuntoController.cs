@@ -40,7 +40,7 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new ConjuntoCreateDTO
             {
-                ConjuntoId = conjunto.ConjuntoId,
+                ConjuntoId = conjunto.ConjuntoId
             };
 
             return Ok(dto);

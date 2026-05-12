@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -29,18 +30,26 @@ namespace GestionResidenciaApi.Services
             return bitacoraVigilancia;
         }
 
-    public async Task<GestionResidenciaApi.Models.BitacoraVigilancia> UpdateBitacoraVigilanciaAsync(int id, GestionResidenciaApi.Models.BitacoraVigilancia bitacoraVigilancia)
-    {
-            var existente = await _context.BitacoraVigilancia.FindAsync(id);
-            if (existente == null)
+        public async Task<BitacoraVigilancia?> UpdateBitacoraVigilanciaAsync(int id, BitacoraVigilanciaDTO dto)
+        {
+            var existing = await _context.BitacoraVigilancia.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Observacion = bitacoraVigilancia.Observacion;
+            existing.VigilanteId = dto.VigilanteId;
+            existing.TipoEventoId = dto.TipoEventoId;
+            existing.IngresoId = dto.IngresoId;
+            existing.UnidadId = dto.UnidadId;
+            existing.FechaHora = dto.FechaHora;
+            existing.Observacion = dto.Observacion;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
-    public async Task<bool> DeleteBitacoraVigilanciaAsync(int id)
+        public async Task<bool> DeleteBitacoraVigilanciaAsync(int id)
     {
             var existente = await _context.BitacoraVigilancia.FindAsync(id);
             if (existente == null)

@@ -48,6 +48,7 @@ namespace GestionResidenciaApi.Controllers
         }
 
         // POST: api/ZonaComun
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

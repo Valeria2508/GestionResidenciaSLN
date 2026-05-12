@@ -12,7 +12,12 @@ namespace GestionResidenciaApi.Services
         {
             _context = context;
         }
-
+        public async Task<Usuario?> ValidarUsuarioAsync(string username, string password)
+        {
+            // Buscamos el usuario que coincida con el nombre y la clave
+            return await _context.Usuario
+                .FirstOrDefaultAsync(u => u.Username == username && u.PasswordHash == password);
+        }
         public async Task<List<GestionResidenciaApi.Models.Usuario>> GetUsuarioAsync()
         {
             return await _context.Usuario.ToListAsync();

@@ -78,15 +78,15 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<AuditoriaLogin>> UpdateAuditoriaLogin(int id, [FromBody] AuditoriaLogin auditoriaLogin)
+        public async Task<ActionResult<AuditoriaLogin>> UpdateAuditoriaLogin(int id, AuditoriaLoginCreateDTO dto)
         {
-            if (id != auditoriaLogin.UsuarioId)
-                return BadRequest(new { message = "El Usarname no coincide" });
+            if (dto == null)
+                return BadRequest(new { message = "Datos inválidos" });
 
-            var updatedAuditoriaLogin = await _auditoriaLoginService.UpdateAuditoriaLoginAsync(id, auditoriaLogin);
+            var updatedAuditoriaLogin = await _auditoriaLoginService.UpdateAuditoriaLoginAsync(id, dto);
 
             if (updatedAuditoriaLogin is null)
-                return NotFound(new { message = "AuditoriaLogin no encontrado" });
+                return NotFound(new { message = "Apartamento no encontrado" });
 
             return Ok(updatedAuditoriaLogin);
         }

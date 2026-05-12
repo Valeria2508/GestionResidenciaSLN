@@ -28,6 +28,7 @@ namespace GestionResidenciaApi.Controllers
         }
 
         // GET: api/pago/5
+        [Authorize]
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -48,6 +49,7 @@ namespace GestionResidenciaApi.Controllers
         }
 
         // POST: api/pago
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

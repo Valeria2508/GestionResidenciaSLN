@@ -1,221 +1,197 @@
-﻿@page "/Ingresos"
+﻿@page "/ingreso"
+@using GestionResidenciaApi.DTOs
+@inject HttpClient Http
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 
-<h3>Ingresos</h3>
-
-<button class="btn btn-primary mb-3" @onclick="Nuevo">
-    Nuevo Registro
-</button>
-
-<table class="table table-striped">
-
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>TipoIngresoId</th>
-            <th>UsuarioId</th>
-            <th>UnidadId</th>
-            <th>VisitanteId</th>
-            <th>NombrePersona</th>
-            <th>Documento</th>
-            <th>Vehiculo</th>
-            <th>FechaHoraIngreso</th>
-            <th>FechaHoraSalida</th>
-            <th>Observacion</th>
-        </tr>
-    </thead>
-
-    <tbody>
-
-        @foreach (var item in lista)
-        {
-            <tr>
-
-                <td>@item.Id</td>
-                <td>@item.UsuarioId</td>
-                <td>@item.UnidadId</td>
-                <td>@item.VisitanteId</td>
-                <td>@item.NombrePersona</td>
-                <td>@item.Documento</td>
-                <td>@item.Vehiculo</td>
-                <td>@item.FechaHoraIngreso</td>
-                <td>@item.FechaHoraSalida</td>
-                <td>@item.Observacion</td>
-
-
-
-                <td>
-
-                    <button class="btn btn-warning btn-sm"
-                            @onclick="(()=>Editar(item))">
-                        Editar
-                    </button>
-
-                    <button class="btn btn-danger btn-sm"
-                            @onclick="(()=>Eliminar(item.Id))">
-                        Eliminar
-                    </button>
-
-                </td>
-
-            </tr>
-        }
-
-    </tbody>
-
-</table>
-
-@if (mostrarForm)
-{
-
-    <div class="card p-3 mt-3">
-
-        <h5>@tituloFormulario</h5>
-
-        <div class="mb-2">
-
-            <label>Nombre</label>
-
-            <input class="form-control"
-                   @bind="modelo.Nombre" />
-
-        </div>
-
-        <div class="mb-2">
-
-            <label>Estado</label>
-
-            <select class="form-control"
-                    @bind="modelo.Estado">
-
-                <option>Activo</option>
-                <option>Inactivo</option>
-
-            </select>
-
-        </div>
-
-        <button class="btn btn-success"
-                @onclick="Guardar">
-            Guardar
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Gestión Conjuntos</h4>
+        <button class="btn btn-light btn-sm" @onclick="PrepararNuevo">
+            <i class="bi bi-plus-circle"></i> + Nuevo conjunto
         </button>
-
-        <button class="btn btn-secondary"
-                @onclick="Cancelar">
-            Cancelar
-        </button>
-
     </div>
 
-}
+    <div class="card-body">
+        @* --- FORMULARIO DE EDICIÓN / CREACIÓN --- *@
+        @* @if (mostrandoFormulario)
+        {
+            <div class="alert alert-light border-primary shadow-sm mb-4">
+                <h5>@(esEdicion ? "Editar Auditoria Login" : "Nueva Auditoria Login")</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Usuario ID</label>
+                        <input type="number" class="form-control" @bind="modelo.UsuarioId" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Número</label>
+                        <input type="text" class="form-control" @bind="modelo.Numero" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tipo</label>
+                        <input type="text" class="form-control" @bind="modelo.Tipo" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Área</label>
+                        <input type="text" class="form-control" @bind="modelo.Area" />
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-success btn-sm" @onclick="Guardar">Guardar</button>
+                    <button class="btn btn-secondary btn-sm" @onclick="() => mostrandoFormulario = false">Cancelar</button>
+                </div>
+            </div>
+        } *@
+
+        @if (ingreso == null)
+        {
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p>Conectando con la API...</p>
+            </div>
+        }
+        else if (ingreso.Count == 0)
+        {
+            <div class="alert alert-warning">
+                La API respondió, pero la tabla está vacía en la base de datos.
+            </div>
+        }
+        else
+        {
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>TipoIngresoId</th>
+                        <th>UsuarioId</th>
+                        <th>UnidadId</th>
+                        <th>VisitanteId</th>
+                        <th>NombrePersona</th>
+                        <th>Documento</th>
+                        <th>Vehiculo</th>
+                        <th>FechaIngreso</th>
+                        <th>FechaSalida</th>
+                        <th>Observacion</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ingreso)
+                    {
+                        <tr>
+                            <td>@item.TipoIngresoId</td>
+                            <td>@item.UsuarioId</td>
+                            <td>@item.UnidadId</td>
+                            <td>@item.VisitanteId</td>
+                            <td>@item.NombrePersona</td>
+                            <td>@item.Documento</td>
+                            <td>@item.Vehiculo</td>
+                            <td>@item.FechaIngreso</td>
+                            <td>@item.FechaSalida</td>
+                            <td>@item.Observacion</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => PrepararEdicion(item)">
+                                    Editar
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Eliminar(item.Ingreso)">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
 
 @code {
+    private List<IngresoDTO>? ingreso;
+    private IngresoDTO modelo = new();
+    private bool mostrandoFormulario = false;
+    private bool esEdicion = false;
+    private int idEdicion = 0;
 
-    List<ItemVM> lista = new();
-
-    ItemVM modelo = new();
-
-    bool mostrarForm = false;
-
-    string tituloFormulario = "";
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-
-        lista.Add(new ItemVM { Id = 1, TipoIngresoId=" 1", UsuarioId="1", UnidadId="1", VisitanteId="2", NombrePersona="pedro", Documento="123", Vehiculo="masda", FechaHoraIngreso="3pm", FechaHoraSalida="7pm", Observacion="hahaha" });
-        lista.Add(new ItemVM { Id = 2, TipoIngresoId = " 1", UsuarioId = "1", UnidadId = "1", VisitanteId = "2", NombrePersona = "pedro", Documento = "123", Vehiculo = "masda", FechaHoraIngreso = "3pm", FechaHoraSalida = "7pm", Observacion = "hahaha" });
-        lista.Add(new ItemVM { Id = 3, TipoIngresoId = " 1", UsuarioId = "1", UnidadId = "1", VisitanteId = "2", NombrePersona = "pedro", Documento = "123", Vehiculo = "masda", FechaHoraIngreso = "3pm", FechaHoraSalida = "7pm", Observacion = "hahaha" });
-        
-
+        await CargarDatos();
     }
 
-    void Nuevo()
+    private async Task CargarDatos()
     {
-        modelo = new ItemVM();
-        tituloFormulario = "Nuevo Registro";
-        mostrarForm = true;
-    }
-
-    void Editar(ItemVM item)
-    {
-        modelo = new ItemVM
+        try
         {
-            Id = item.Id,
-            TipoIngresoId = item.TipoIngresoId,
+            ingreso = await Http.GetFromJsonAsync<List<IngresoDTO>>("api/Ingreso");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error de conexión: {ex.Message}");
+            ingreso = new List<IngresoDTO>();
+        }
+    }
+
+    private void PrepararNuevo()
+    {
+        modelo = new IngresoDTO();
+        esEdicion = false;
+        mostrandoFormulario = true;
+    }
+
+    private void PrepararEdicion(IngresoDTO item)
+    {
+        // Clonamos el objeto para no editar la lista directamente
+        modelo = new IngresoDTO
+        {
             UsuarioId = item.UsuarioId,
             UnidadId = item.UnidadId,
             VisitanteId = item.VisitanteId,
             NombrePersona = item.NombrePersona,
             Documento = item.Documento,
             Vehiculo = item.Vehiculo,
-            FechaHoraIngreso = item.FechaHoraIngreso,
-            FechaHoraSalida = item.FechaHoraSalida,
+            FechaIngreso = item.FechaIngreso,
+            FechaSalida = item.FechaSalida,
             Observacion = item.Observacion
         };
-
-        tituloFormulario = "Editar Registro";
-        mostrarForm = true;
     }
 
-    void Guardar()
+    private async Task Guardar()
     {
-
-        if (modelo.Id == 0)
+        try
         {
-
-            modelo.Id = lista.Count + 1;
-            lista.Add(modelo);
-
+            if (esEdicion)
+            {
+                // PUT: api/Conjunto/5
+                await Http.PutAsJsonAsync($"api/Conjunto/{idEdicion}", modelo);
+            }
+            else
+            {
+                // POST: api/Conjunto
+                await Http.PostAsJsonAsync("api/Conjunto", modelo);
+            }
+            
+            mostrandoFormulario = false;
+            await CargarDatos(); // Refrescamos la tabla
         }
-        else
+        catch (Exception ex)
         {
-
-            var registro = lista.First(x => x.Id == modelo.Id);
-
-            registro.TipoIngresoId = modelo.TipoIngresoId;
-            registro.UsuarioId = modelo.UsuarioId;
-            registro.UnidadId = modelo.UnidadId;
-            registro.VisitanteId = modelo.VisitanteId;
-            registro.NombrePersona = modelo.NombrePersona;
-            registro.Documento = modelo.Documento;
-            registro.Vehiculo = modelo.Vehiculo;
-            registro.FechaHoraIngreso = modelo.FechaHoraIngreso;
-            registro.FechaHoraSalida = modelo.FechaHoraSalida;
-            registro.Observacion = modelo.Observacion;
-
+            Console.WriteLine($"Error al guardar: {ex.Message}");
         }
-
-        mostrarForm = false;
-
     }
 
-    void Eliminar(int id)
+    private async Task Eliminar(int id)
     {
-
-        var registro = lista.First(x => x.Id == id);
-
-        lista.Remove(registro);
-
+        // Usamos JS para confirmar la eliminación
+        bool confirmado = await JS.InvokeAsync<bool>("confirm", "¿Seguro que deseas eliminar este registro?");
+        if (confirmado)
+        {
+            try
+            {
+                await Http.DeleteAsync($"api/Apartamentos/{id}");
+                await CargarDatos(); // Refrescamos la tabla
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar: {ex.Message}");
+            }
+        }
     }
-
-    void Cancelar()
-    {
-        mostrarForm = false;
-    }
-
-    public class ItemVM
-    {
-        public int Id { get; set; }
-        public string TipoIngresoId { get; set; }
-        public string UsuarioId { get; set; }
-        public string UnidadId { get; set; }
-        public string VisitanteId { get; set; }
-        public string NombrePersona { get; set; }
-        public string Documento { get; set; }
-        public string Vehiculo { get; set; }
-        public string FechaHoraIngreso { get; set; }
-        public string FechaHoraSalida { get; set; }
-        public string Observacion { get; set; }
-
-    }
-
 }

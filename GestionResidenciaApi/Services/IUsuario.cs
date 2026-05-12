@@ -4,6 +4,7 @@ namespace GestionResidenciaApi.Services
 {
     public interface IUsuario
     {
+        Task<GestionResidenciaApi.Models.Usuario?> ValidarUsuarioAsync(string username, string password);
         Task<List<GestionResidenciaApi.Models.Usuario>> GetUsuarioAsync();
         Task<GestionResidenciaApi.Models.Usuario> GetUsuarioByIdAsync(int id);
         Task<GestionResidenciaApi.Models.Usuario> CreateUsuarioAsync(GestionResidenciaApi.Models.Usuario usuario);

@@ -40,11 +40,13 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new MetodoPagoDTO
             {
-                MetodoPagoId = metodoPago.MetodoPagoId
+                Nombre = metodoPago.Nombre,
+                Descripcion = metodoPago.Descripcion    
             };
 
             return Ok(dto);
         }
+
 
         // POST: api/MetodoPago
         [HttpPost]

@@ -49,6 +49,7 @@ namespace GestionResidenciaApi.Controllers
         }
 
         // POST: api/Reserva
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

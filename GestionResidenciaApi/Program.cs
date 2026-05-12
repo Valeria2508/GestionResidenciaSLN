@@ -5,7 +5,10 @@ using Microsoft.OpenApi.Models;
 using GestionResidenciaApi.Data;
 using GestionResidenciaApi.Models;
 using GestionResidenciaApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 //using GestionResidenciaApi.Services.ApartamentosService;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // configurar servicios
@@ -23,6 +26,7 @@ builder.Services.AddCors(options =>
 
 // register services implementations
 builder.Services.AddScoped<IApartamentos, ApartamentosService>();
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IAuditoriaLogin, AuditoriaLoginService>();
 builder.Services.AddScoped<IBitacoraVigilancia, BitacoraVigilanciaService>();
 builder.Services.AddScoped<IConjunto, ConjuntoService>();
@@ -63,27 +67,36 @@ var _expireMinutes =builder.Configuration["Jwt:ExpireMinutes"];
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-    
+
 //configurar jwt
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings["Key"])
+        )
+    };
+});
+
+builder.Services.AddAuthorization();
 
 //configurar swagger para aut de jwt
-   builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "GestionResidenciaApi", Version = "v1" });
 //config de seguridad para jwt en swagger
@@ -122,15 +135,42 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-app.UseDeveloperExceptionPage();
+// 1. Manejo de excepciones primero
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+// 2. Routing DEBE ir antes de Auth
+app.UseRouting();
+
+// 3. Cors DEBE ir después de Routing pero antes de Auth
 app.UseCors("CorsPolicy");
+
+// 4. Autenticación y Autorización SIEMPRE en este orden
 app.UseAuthentication();
 app.UseAuthorization();
 
+// 5. Finalmente mapear los controladores
 app.MapControllers();
 
 app.Run();
+
+//app.UseDeveloperExceptionPage();
+//app.UseSwagger();
+//app.UseSwaggerUI();
+
+//app.UseHttpsRedirection();
+//app.UseCors("CorsPolicy");
+//app.UseRouting();
+//app.UseAuthentication();
+//app.UseAuthorization();
+
+//app.MapControllers();
+
+//app.Run();

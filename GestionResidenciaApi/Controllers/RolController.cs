@@ -28,6 +28,7 @@ namespace GestionResidenciaApi.Controllers
         }
 
         // GET: api/rol/5
+        
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -40,7 +41,8 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new RolDTO
             {
-                RolId = rol.RolId
+                RolId = rol.RolId,
+                Nombre = rol.Nombre
             };
 
             return Ok(dto);

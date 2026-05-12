@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,15 +31,21 @@ namespace GestionResidenciaApi.Services
             return apartamento;
         }
 
-        public async Task<GestionResidenciaApi.Models.Apartamentos > UpdateApartamentoAsync(int id, GestionResidenciaApi.Models.Apartamentos apartamento)
+        public async Task<Apartamentos?> UpdateApartamentoAsync(int id, ApartamentoCreateDTO dto)
         {
-            var existente = await _context.Apartamentos.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Apartamentos.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Numero = apartamento.Numero;
+            existing.TorreId = dto.TorreId;
+            existing.Numero = dto.Numero;
+            existing.Tipo = dto.Tipo;
+            existing.Area = dto.Area;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteApartamentoAsync(int id)

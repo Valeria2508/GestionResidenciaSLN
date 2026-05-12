@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 namespace GestionResidenciaApi.Services
 {
@@ -26,15 +27,23 @@ namespace GestionResidenciaApi.Services
             await _context.SaveChangesAsync();
             return auditoriaLogin;
         }
-        public async Task<GestionResidenciaApi.Models.AuditoriaLogin> UpdateAuditoriaLoginAsync(int id, GestionResidenciaApi.Models.AuditoriaLogin auditoriaLogin)
+        public async Task<AuditoriaLogin?> UpdateAuditoriaLoginAsync(int id, AuditoriaLoginCreateDTO dto)
         {
-            var existente = await _context.AuditoriaLogin.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.AuditoriaLogin.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Motivo = auditoriaLogin.Motivo;
+            existing.UsuarioId = dto.UsuarioId;
+            existing.Username = dto.Username;
+            existing.FechaIntento = dto.FechaIntento;
+            existing.Ip = dto.Ip;
+            existing.Exitoso = dto.Exitoso;
+            existing.Motivo = dto.Motivo;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
         public async Task<bool> DeleteAuditoriaLoginAsync(int id)
         {

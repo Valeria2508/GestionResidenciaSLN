@@ -43,13 +43,15 @@ namespace GestionResidenciaApi.Controllers
                 MantenimientoId = mantenimiento.MantenimientoId,
                 ZonaComunId = mantenimiento.ZonaComunId,
                 TipoMantenimientoId = mantenimiento.TipoMantenimientoId,
-                UnidadId = mantenimiento.UnidadId
+                UnidadId = mantenimiento.UnidadId,
+                Proveedor = mantenimiento.Proveedor,
             };  
 
             return Ok(dto);
         }
 
         // POST: api/Mantenimiento
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

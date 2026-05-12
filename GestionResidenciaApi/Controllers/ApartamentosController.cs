@@ -3,6 +3,7 @@ using GestionResidenciaApi.Models;
 using GestionResidenciaApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Controllers
 {
@@ -19,6 +20,7 @@ namespace GestionResidenciaApi.Controllers
         }
 
         // GET: api/Apartamentos
+        /*[Authorize]*/ // puedes dejarlo o quitarlo para pruebas
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Apartamentos>>> GetApartamentos()
@@ -40,7 +42,6 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new ApartamentoCreateDTO
             {
-                UnidadId = apartamento.UnidadId,
                 TorreId = apartamento.TorreId,
                 Numero = apartamento.Numero,
                 Tipo = apartamento.Tipo,
@@ -74,12 +75,12 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Apartamentos>> UpdateApartamento(int id, [FromBody] Apartamentos apartamento)
+        public async Task<ActionResult<Apartamentos>> UpdateApartamento(int id, ApartamentoCreateDTO dto)
         {
-            if (id != apartamento.UnidadId)
-                return BadRequest(new { message = "El ID no coincide" });
+            if (dto == null)
+                return BadRequest(new { message = "Datos inválidos" });
 
-            var updatedApartamento = await _apartamentosService.UpdateApartamentoAsync(id, apartamento);
+            var updatedApartamento = await _apartamentosService.UpdateApartamentoAsync(id, dto);
 
             if (updatedApartamento is null)
                 return NotFound(new { message = "Apartamento no encontrado" });
@@ -89,7 +90,7 @@ namespace GestionResidenciaApi.Controllers
 
         // DELETE: api/Apartamentos/5
         [HttpDelete("{id:int}")]
-        [Authorize] // puedes dejarlo o quitarlo para pruebas
+        /*[Authorize]*/ // puedes dejarlo o quitarlo para pruebas
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteApartamento(int id)

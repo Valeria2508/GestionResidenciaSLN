@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using GestionResidenciaApi.Services;
+﻿using GestionResidenciaApi.DTOs;
 using GestionResidenciaApi.Models;
+using GestionResidenciaApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GestionResidenciaApi.Controllers
 {
@@ -50,21 +52,20 @@ namespace GestionResidenciaApi.Controllers
         //}
 
         // POST: api/Permiso
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Permiso>> CreatePermiso([FromBody] Permiso permiso)
+        public async Task<ActionResult> CreatePermiso(PermisoDTO dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var permiso = new Permiso
+            {
+                Nombre = dto.Nombre,
+            };
 
-            var createdPermiso = await _permisoService.CreatePermisoAsync(permiso);
+            await _permisoService.CreatePermisoAsync(permiso);
 
-            return CreatedAtAction(
-                nameof(GetPermisoById),
-                new { id = createdPermiso.PermisoId },
-                createdPermiso
-            );
+            return Ok(permiso);
         }
 
         // PUT: api/Permiso/5

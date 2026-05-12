@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using GestionResidenciaApi.DTOs;
 using GestionResidenciaApi.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GestionResidenciaApi.Services
 {
@@ -9,7 +10,7 @@ namespace GestionResidenciaApi.Services
         Task<List<GestionResidenciaApi.Models.Apartamentos>> GetApartamentosAsync();
         Task<GestionResidenciaApi.Models.Apartamentos> GetApartamentoByIdAsync(int id);
         Task<GestionResidenciaApi.Models.Apartamentos> CreateApartamentoAsync(GestionResidenciaApi.Models.Apartamentos apartamento);
-        Task<GestionResidenciaApi.Models.Apartamentos> UpdateApartamentoAsync(int id, GestionResidenciaApi.Models.Apartamentos apartamento);
+        Task<Apartamentos?> UpdateApartamentoAsync(int id, ApartamentoCreateDTO dto);
         Task<bool> DeleteApartamentoAsync(int id);
     }
 }

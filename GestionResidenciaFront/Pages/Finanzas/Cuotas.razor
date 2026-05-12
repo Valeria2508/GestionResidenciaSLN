@@ -1,195 +1,189 @@
-﻿@page "/cuotas"
+﻿@page "/cuota"
+@using GestionResidenciaApi.DTOs
+@inject HttpClient Http
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 
-<h3>Cuotas</h3>
-
-<button class="btn btn-primary mb-3" @onclick="Nuevo">
-    Nuevo Registro
-</button>
-
-<table class="table table-striped">
-
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>UnidadId</th>
-            <th>Periodo</th>
-            <th>Valor</th>
-            <th>FechaVencimiento</th>
-            <th>EstadoPago</th>
-        </tr>
-    </thead>
-
-    <tbody>
-
-        @foreach (var item in lista)
-        {
-            <tr>
-
-                <td>@item.Id</td>
-                <td>@item.UnidadId</td>
-                <td>@item.Periodo</td>
-                <td>@item.Valor</td>
-                <td>@item.FechaVencimiento</td>
-                <td>@item.EstadoPago</td>
-
-                <td>
-
-                    <button class="btn btn-warning btn-sm"
-                            @onclick="(()=>Editar(item))">
-                        Editar
-                    </button>
-
-                    <button class="btn btn-danger btn-sm"
-                            @onclick="(()=>Eliminar(item.Id))">
-                        Eliminar
-                    </button>
-
-                </td>
-
-            </tr>
-        }
-
-    </tbody>
-
-</table>
-
-@if (mostrarForm)
-{
-
-    <div class="card p-3 mt-3">
-
-        <h5>@tituloFormulario</h5>
-
-        <div class="mb-2">
-
-            <label>Nombre</label>
-
-            <input class="form-control"
-                   @bind="modelo.Nombre" />
-
-        </div>
-
-        <div class="mb-2">
-
-            <label>Estado</label>
-
-            <select class="form-control"
-                    @bind="modelo.Estado">
-
-                <option>Activo</option>
-                <option>Inactivo</option>
-
-            </select>
-
-        </div>
-
-        <button class="btn btn-success"
-                @onclick="Guardar">
-            Guardar
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Gestión Cuotas</h4>
+        <button class="btn btn-light btn-sm" @onclick="PrepararNuevo">
+            <i class="bi bi-plus-circle"></i> + Nueva cuota
         </button>
-
-        <button class="btn btn-secondary"
-                @onclick="Cancelar">
-            Cancelar
-        </button>
-
     </div>
 
-}
-
-@code {
-
-    List<ItemVM> lista = new();
-
-    ItemVM modelo = new();
-
-    bool mostrarForm = false;
-
-    string tituloFormulario = "";
-
-    protected override void OnInitialized()
-    {
-
-        lista.Add(new ItemVM { Id = 1, UnidadId="1", Periodo="2023-03", Valor="15000", FechaVencimiento="2023-03-15" , EstadoPago="1"});
-        lista.Add(new ItemVM { Id = 2, UnidadId = "2", Periodo = "2023-03", Valor = "15000", FechaVencimiento = "2023-03-15", EstadoPago = "2" });
-        lista.Add(new ItemVM { Id = 3, UnidadId = "3", Periodo = "2023-03", Valor = "15000", FechaVencimiento = "2023-03-15", EstadoPago = "3" });
-
-    }
-
-    void Nuevo()
-    {
-        modelo = new ItemVM();
-        tituloFormulario = "Nuevo Registro";
-        mostrarForm = true;
-    }
-
-    void Editar(ItemVM item)
-    {
-        modelo = new ItemVM
+    <div class="card-body">
+        @* --- FORMULARIO DE EDICIÓN / CREACIÓN --- *@
+        @* @if (mostrandoFormulario)
         {
-            Id = item.Id,
-            UnidadId = item.UnidadId,
-            Periodo = item.Periodo,
-            Valor = item.Valor,
-            FechaVencimiento = item.FechaVencimiento,
-            EstadoPago = item.EstadoPago
-        };
+            <div class="alert alert-light border-primary shadow-sm mb-4">
+                <h5>@(esEdicion ? "Editar Auditoria Login" : "Nueva Auditoria Login")</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Usuario ID</label>
+                        <input type="number" class="form-control" @bind="modelo.UsuarioId" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Número</label>
+                        <input type="text" class="form-control" @bind="modelo.Numero" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tipo</label>
+                        <input type="text" class="form-control" @bind="modelo.Tipo" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Área</label>
+                        <input type="text" class="form-control" @bind="modelo.Area" />
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-success btn-sm" @onclick="Guardar">Guardar</button>
+                    <button class="btn btn-secondary btn-sm" @onclick="() => mostrandoFormulario = false">Cancelar</button>
+                </div>
+            </div>
+        } *@
 
-        tituloFormulario = "Editar Registro";
-        mostrarForm = true;
-    }
-
-    void Guardar()
-    {
-
-        if (modelo.Id == 0)
+        @if (cuota == null)
         {
-
-            modelo.Id = lista.Count + 1;
-            lista.Add(modelo);
-
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p>Conectando con la API...</p>
+            </div>
+        }
+        else if (cuota.Count == 0)
+        {
+            <div class="alert alert-warning">
+                La API respondió, pero la tabla está vacía en la base de datos.
+            </div>
         }
         else
         {
-
-            var registro = lista.First(x => x.Id == modelo.Id);
-
-            registro.UnidadId = modelo.UnidadId;
-            registro.Periodo = modelo.Periodo;
-            registro.Valor = modelo.Valor;
-            registro.FechaVencimiento = modelo.FechaVencimiento;
-            registro.EstadoPago = modelo.EstadoPago;
-
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>UnidadId</th>
+                        <th>EstadoId</th>
+                        <th>Periodo</th>
+                        <th>Valor</th>
+                        <th>FechaLimite</th>
+                        <th>SaldoPendiente</th>
+                        <th>Observacion</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in cuota)
+                    {
+                        <tr>
+                            <td>@item.UnidadId</td>
+                            <td>@item.EstadoId</td>
+                            <td>@item.Periodo</td>
+                            <td>@item.Valor</td>
+                            <td>@item.FechaLimite</td>
+                            <td>@item.SaldoPendiente</td>
+                            <td>@item.Observacion</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => PrepararEdicion(item)">
+                                    Editar
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Eliminar(item.Cuota)">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
+    </div>
+</div>
 
-        mostrarForm = false;
+@code {
+    private List<CuotaCreateDTO>? cuota;
+    private CuotaCreateDTO modelo = new();
+    private bool mostrandoFormulario = false;
+    private bool esEdicion = false;
+    private int idEdicion = 0;
 
-    }
-
-    void Eliminar(int id)
+    protected override async Task OnInitializedAsync()
     {
-
-        var registro = lista.First(x => x.Id == id);
-
-        lista.Remove(registro);
-
+        await CargarDatos();
     }
 
-    void Cancelar()
+    private async Task CargarDatos()
     {
-        mostrarForm = false;
+        try
+        {
+            cuota = await Http.GetFromJsonAsync<List<CuotaCreateDTO>>("api/Cuota");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error de conexión: {ex.Message}");
+            cuota = new List<CuotaCreateDTO>();
+        }
     }
 
-    public class ItemVM
+    private void PrepararNuevo()
     {
-        public int Id { get; set; }
-
-        public string UnidadId { get; set; }
-
-        public string Periodo { get; set; }
-        public string Valor { get; set; }
-        public string FechaVencimiento { get; set; }
-        public string EstadoPago { get; set; }
+        modelo = new CuotaCreateDTO();
+        esEdicion = false;
+        mostrandoFormulario = true;
     }
 
+    private void PrepararEdicion(CuotaCreateDTO item)
+    {
+        // Clonamos el objeto para no editar la lista directamente
+        modelo = new CuotaCreateDTO
+        {
+            UnidadId = item.UnidadId,
+            EstadoId = item.EstadoId,
+            Periodo = item.Periodo,
+            Valor = item.Valor,
+            FechaLimite = item.FechaLimite,
+            SaldoPendiente = item.SaldoPendiente,
+            Observacion = item.Observacion
+        };
+    }
+
+    private async Task Guardar()
+    {
+        try
+        {
+            if (esEdicion)
+            {
+                // PUT: api/Cuota/5
+                await Http.PutAsJsonAsync($"api/Cuota/{idEdicion}", modelo);
+            }
+            else
+            {
+                // POST: api/Cuota
+                await Http.PostAsJsonAsync("api/Conjunto", modelo);
+            }
+            
+            mostrandoFormulario = false;
+            await CargarDatos(); // Refrescamos la tabla
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar: {ex.Message}");
+        }
+    }
+
+    private async Task Eliminar(int id)
+    {
+        // Usamos JS para confirmar la eliminación
+        bool confirmado = await JS.InvokeAsync<bool>("confirm", "¿Seguro que deseas eliminar este registro?");
+        if (confirmado)
+        {
+            try
+            {
+                await Http.DeleteAsync($"api/Apartamentos/{id}");
+                await CargarDatos(); // Refrescamos la tabla
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar: {ex.Message}");
+            }
+        }
+    }
 }
