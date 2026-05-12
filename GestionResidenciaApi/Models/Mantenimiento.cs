@@ -13,5 +13,9 @@ namespace GestionResidenciaApi.Models
         public string Proveedor { get; set; }
         public string Descripcion { get; set; }
         public decimal Costo { get; set; }
+
+        public TipoMantenimiento TipoMantenimiento { get; set; } = null!;
+        public ZonaComun ZonaComun { get; set; } = null!;
+        public Apartamentos Unidad { get; set; } = null!;
     }
 }

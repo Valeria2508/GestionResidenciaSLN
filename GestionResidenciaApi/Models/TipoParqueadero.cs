@@ -7,5 +7,7 @@ namespace GestionResidenciaApi.Models
         [Key]
         public int TipoParqueaderoId { get; set; }
         public string Nombre { get; set; }
+
+        public ICollection<Parqueadero> Parqueaderos { get; set; }
     }
 }

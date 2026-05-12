@@ -11,5 +11,9 @@ namespace GestionResidenciaApi.Models
         public string Ciudad { get; set; }
         public string NIT { get; set; }
         public string Telefono { get; set; }
+
+        // relacion con muchas torres
+        public ICollection<Torre> Torres { get; set; } = new List<Torre>();
+        public ICollection<ZonaComun> ZonasComunes { get; set; } = new List<ZonaComun>();
     }
 }

@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using GestionResidenciaApi.Services;
+﻿using GestionResidenciaApi.DTOs;
 using GestionResidenciaApi.Models;
+using GestionResidenciaApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
 namespace GestionResidenciaApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class CuotaAdministracionController : ControllerBase
     {
         private readonly ICuotaAdministracion _cuotaAdministracionService;
@@ -17,49 +20,85 @@ namespace GestionResidenciaApi.Controllers
 
         // GET: api/CuotaAdministracion
         [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<GestionResidenciaApi.Models.CuotaAdministracion>>> GetCuotasAdministracion()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<CuotaAdministracion>>> GetCuotaAdministracion()
         {
-            var cuotas = await _cuotaAdministracionService.GetCuotasAdministracionAsync();
-            return Ok(cuotas);
+            var cuotaAdministracion = await _cuotaAdministracionService.GetCuotasAdministracionAsync();
+            return Ok(cuotaAdministracion);
         }
 
-        // GET: api/CuotaAdministracion por id/
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.CuotaAdministracion>> GetCuotaAdministracion(int id)
+        // GET: api/CuotaAdministracion/5
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CuotaCreateDTO>> GetCuotaAdministracionById(int id)
         {
-            var cuota = await _cuotaAdministracionService.GetCuotaAdministracionByIdAsync(id);
-            if (cuota is null) return NotFound();
-            return Ok(cuota);
+            var cuotaAdmin = await _cuotaAdministracionService.GetCuotaAdministracionByIdAsync(id);
+
+            if (cuotaAdmin is null)
+                return NotFound(new { message = "CuotaAdministracion no encontrado" });
+
+            var dto = new CuotaCreateDTO
+            {
+                UnidadId = cuotaAdmin.UnidadId,
+                EstadoId = cuotaAdmin.EstadoId
+            };
+
+            return Ok(dto);
         }
 
         // POST: api/CuotaAdministracion
         [HttpPost]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.CuotaAdministracion>> CreateCuotaAdministracion(GestionResidenciaApi.Models.CuotaAdministracion cuota)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Create(CuotaCreateDTO dto)
         {
-            var createdCuota = await _cuotaAdministracionService.CreateCuotaAdministracionAsync(cuota);
-            return CreatedAtAction(nameof(GetCuotaAdministracion), new { id = createdCuota.CuotaId }, createdCuota);
+            var cuota = new CuotaAdministracion
+            {
+                UnidadId = dto.UnidadId,
+                EstadoId = dto.EstadoId,
+                Periodo = dto.Periodo,
+                Valor = dto.Valor,
+                FechaLimite = dto.FechaLimite,
+                SaldoPendiente = dto.SaldoPendiente,
+                Observacion = dto.Observacion
+            };
+
+            await _cuotaAdministracionService.CreateCuotaAdministracionAsync(cuota);
+
+            return Ok(cuota);
         }
 
         // PUT: api/CuotaAdministracion/5
-        [HttpPut("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.CuotaAdministracion>> UpdateCuotaAdministracion(int id, GestionResidenciaApi.Models.CuotaAdministracion cuota)
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<CuotaAdministracion>> UpdateCuotaAdministracion(int id, [FromBody] CuotaAdministracion cuotaAdministracion)
         {
-            var updatedCuota = await _cuotaAdministracionService.UpdateCuotaAdministracionAsync(id, cuota);
-            if (updatedCuota is null) return NotFound();
-            return Ok(updatedCuota);
+            if (id != cuotaAdministracion.UnidadId)
+                return BadRequest(new { message = "El ID no coincide" });
+
+            var updatedCuotaAdministracion = await _cuotaAdministracionService.UpdateCuotaAdministracionAsync(id, cuotaAdministracion);
+
+            if (updatedCuotaAdministracion is null)
+                return NotFound(new { message = "CuotaAdministracion no encontrado" });
+
+            return Ok(updatedCuotaAdministracion);
         }
 
         // DELETE: api/CuotaAdministracion/5
-        [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<ActionResult<GestionResidenciaApi.Models.CuotaAdministracion>> DeleteCuotaAdministracion(int id)
+        [HttpDelete("{id:int}")]
+        [Authorize] // puedes dejarlo o quitarlo para pruebas
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteCuotaAdministracion(int id)
         {
             var success = await _cuotaAdministracionService.DeleteCuotaAdministracionAsync(id);
-            if (!success) return NotFound();
+
+            if (!success)
+                return NotFound(new { message = "CuotaAdministracion no encontrado" });
+
             return NoContent();
         }
     }

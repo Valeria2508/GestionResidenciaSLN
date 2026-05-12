@@ -11,5 +11,9 @@ namespace GestionResidenciaApi.Models
         public int Capacidad { get; set; }
         public bool RequierePago { get; set; }
         public decimal ValorHora { get; set; }
+
+        public Conjunto Conjunto { get; set; } = null!;
+        public ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
+        public ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
     }
 }

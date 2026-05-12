@@ -1,80 +1,87 @@
-﻿@page "/"
+﻿@page "/login"
+@using GestionResidenciaApi.DTOs
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 
-@inject NavigationManager nav
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg" style="width: 400px;">
+        <div class="card-header bg-primary text-white text-center">
+            <h4>Iniciar Sesión</h4>
+        </div>
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
 
-<div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="mb-3">
+                <label>Username</label>
+                <input type="text" class="form-control" @bind="loginModel.Username" placeholder="admin" />
+            </div>
 
-    <div class="card shadow p-4" style="width:350px">
+            <div class="mb-3">
+                <label>Password</label>
+                <input type="password" class="form-control" @bind="loginModel.Password" />
+            </div>
 
-        <h4 class="text-center mb-3">
-            <i class="bi bi-building"></i>
-            Sistema Residencial
-        </h4>
-
-        <input class="form-control mb-2"
-               placeholder="Usuario"
-               @bind="usuario" />
-
-        <input class="form-control mb-2"
-               type="password"
-               placeholder="Contraseña"
-               @bind="clave" />
-
-        <select class="form-control mb-3" @bind="rol">
-
-            <option value="">Seleccione rol</option>
-            <option value="admin">Administrador</option>
-            <option value="vigilante">Vigilante</option>
-            <option value="residente">Residente</option>
-            <option value="contador">Contador</option>
-
-        </select>
-
-        <button class="btn btn-primary w-100"
-                @onclick="IniciarSesion">
-
-            <i class="bi bi-box-arrow-in-right"></i>
-            Ingresar
-
-        </button>
-
-        <p class="text-danger mt-2">@mensaje</p>
-
+            <button class="btn btn-primary w-100" @onclick="HandleLogin" disabled="@isProcessing">
+                @if (isProcessing)
+                {
+                    <span class="spinner-border spinner-border-sm"></span>
+                }
+                Entrar
+            </button>
+        </div>
     </div>
-
 </div>
 
 @code {
+    private LoginDTO loginModel = new();
+    private string? errorMessage;
+    private bool isProcessing = false;
 
-    string usuario = "";
-    string clave = "";
-    string rol = "";
-    string mensaje = "";
-
-    void IniciarSesion()
+    private async Task HandleLogin()
     {
-        if (string.IsNullOrEmpty(rol))
-        {
-            mensaje = "Debe seleccionar un rol";
-            return;
-        }
+        isProcessing = true;
+        errorMessage = null;
 
-        if (rol == "admin")
+        try
         {
-            nav.NavigateTo("/dashboard");
+            // Cambia "api/Cuentas/Login" por la ruta exacta de tu AuthController
+            var response = await Http.PostAsJsonAsync("api/Cuentas/Login", loginModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var userToken = await response.Content.ReadFromJsonAsync<UserTokenDTO>();
+                
+                if (userToken != null)
+                {
+                    // Guardamos el token y el rol en el navegador
+                    await JS.InvokeVoidAsync("localStorage.setItem", "authToken", userToken.Token);
+                    await JS.InvokeVoidAsync("localStorage.setItem", "userRole", userToken.Rol);
+
+                    // Redirigir según el rol
+                    if (userToken.Rol == "Admin")
+                        Navigation.NavigateTo("/dashboard-admin");
+                    else
+                        Navigation.NavigateTo("/dashboard-residente");
+                }
+            }
+            else
+            {
+                errorMessage = "Credenciales incorrectas. Intenta de nuevo.";
+            }
         }
-        else if (rol == "vigilante")
+        catch (Exception ex)
         {
-            nav.NavigateTo("/bitacoravigilancia");
+            errorMessage = "Error de conexión con el servidor.";
+            Console.WriteLine(ex.Message);
         }
-        else if (rol == "residente")
+        finally
         {
-            nav.NavigateTo("/reservas");
-        }
-        else if (rol == "contador")
-        {
-            nav.NavigateTo("/finanzas");
+            isProcessing = false;
         }
     }
-
 }
