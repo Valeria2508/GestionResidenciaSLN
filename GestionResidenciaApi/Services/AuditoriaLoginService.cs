@@ -48,12 +48,22 @@ namespace GestionResidenciaApi.Services
         public async Task<bool> DeleteAuditoriaLoginAsync(int id)
         {
             var existente = await _context.AuditoriaLogin.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.AuditoriaLogin.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.AuditoriaLogin.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de auditoría de login porque tiene registros relacionados.");
+            }
         }
     }
 }

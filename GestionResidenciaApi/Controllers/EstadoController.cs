@@ -40,8 +40,10 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new EstadoDTO
             {
-                EstadoId = estado.EstadoId,
-                Nombre = estado.Nombre
+                Nombre = estado.Nombre,
+                Descripcion = estado.Descripcion,
+                TipoEstado = estado.TipoEstado,
+                EstadoId = estado.EstadoId
             };
 
             return Ok(dto);
@@ -69,32 +71,42 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Estado>> UpdateEstado(int id, [FromBody] Estado estado)
+        public async Task<IActionResult> UpdateEstado(int id, EstadoDTO dto)
         {
-            if (id != estado.EstadoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedEstado = await _estadoService.UpdateEstadoAsync(id, dto);
 
-            var updatedEstado = await _estadoService.UpdateEstadoAsync(id, estado);
+            if (updatedEstado == null)
+                return NotFound();
 
-            if (updatedEstado is null)
-                return NotFound(new { message = "Estado no encontrado" });
-
-            return Ok(updatedEstado);
+            return Ok(new
+            {
+                message = "Estado actualizado correctamente"
+            });
         }
 
         // DELETE: api/Estado/5
         [HttpDelete("{id:int}")]
-        [Authorize] // puedes dejarlo o quitarlo para pruebas
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteEstado(int id)
         {
-            var success = await _estadoService.DeleteEstadoAsync(id);
+            try
+            {
+                var success = await _estadoService.DeleteEstadoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Estado no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Estado no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+                
+            }
         }
     }
 }

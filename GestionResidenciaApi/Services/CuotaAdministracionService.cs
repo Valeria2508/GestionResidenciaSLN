@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
 using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GestionResidenciaApi.Services
 {
@@ -13,13 +14,14 @@ namespace GestionResidenciaApi.Services
         {
             _context = context;
         }
-        public async Task<List<GestionResidenciaApi.Models.CuotaAdministracion>> GetCuotasAdministracionAsync()
+        public async Task<List<GestionResidenciaApi.Models.CuotaAdministracion>> GetCuotaAdministracionAsync()
         {
             return await _context.CuotaAdministracion.ToListAsync();
         }
         public async Task<GestionResidenciaApi.Models.CuotaAdministracion> GetCuotaAdministracionByIdAsync(int id)
         {
-            return await _context.CuotaAdministracion.FindAsync(id);
+            var existente = await _context.CuotaAdministracion.FindAsync(id);
+            return existente;
         }
         public async Task<GestionResidenciaApi.Models.CuotaAdministracion> CreateCuotaAdministracionAsync(GestionResidenciaApi.Models.CuotaAdministracion cuotaAdministracion)
         {
@@ -27,25 +29,43 @@ namespace GestionResidenciaApi.Services
             await _context.SaveChangesAsync();
             return cuotaAdministracion;
         }
-        public async Task<GestionResidenciaApi.Models.CuotaAdministracion> UpdateCuotaAdministracionAsync(int id, GestionResidenciaApi.Models.CuotaAdministracion cuotaAdministracion)
+        public async Task<CuotaAdministracion?> UpdateCuotaAdministracionAsync(int id, CuotaCreateDTO dto)
         {
-            var existente = await _context.CuotaAdministracion.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.CuotaAdministracion.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.SaldoPendiente = cuotaAdministracion.SaldoPendiente;
+            existing.UnidadId = dto.UnidadId;
+            existing.EstadoId = dto.EstadoId;
+            existing.Periodo = dto.Periodo;
+            existing.Valor = dto.Valor;
+            existing.FechaLimite = dto.FechaLimite;
+            existing.SaldoPendiente = dto.SaldoPendiente;
+            existing.Observacion = dto.Observacion;
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
         public async Task<bool> DeleteCuotaAdministracionAsync(int id)
         {
             var existente = await _context.CuotaAdministracion.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.CuotaAdministracion.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.CuotaAdministracion.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de conjuntos porque tiene registros relacionados.");
+            }
         }
     }
 }

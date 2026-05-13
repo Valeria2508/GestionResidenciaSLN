@@ -78,32 +78,50 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<AuditoriaLogin>> UpdateAuditoriaLogin(int id, AuditoriaLoginCreateDTO dto)
+        public async Task<IActionResult> UpdateAuditoriaLogin(int id, AuditoriaLoginCreateDTO dto)
         {
-            if (dto == null)
-                return BadRequest(new { message = "Datos inválidos" });
+            try
+            {
+                var updated = await _auditoriaLoginService.UpdateAuditoriaLoginAsync(id, dto);
 
-            var updatedAuditoriaLogin = await _auditoriaLoginService.UpdateAuditoriaLoginAsync(id, dto);
+                if (updated == null)
+                    return NotFound(new { message = "Registro no encontrado" });
 
-            if (updatedAuditoriaLogin is null)
-                return NotFound(new { message = "Apartamento no encontrado" });
-
-            return Ok(updatedAuditoriaLogin);
+                return Ok(updated);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message,
+                    inner = ex.InnerException?.Message
+                });
+            }
         }
 
-        // DELETE: api/AuditoriaLogin/5
+        // DELETE: api/Apartamentos/5
         [HttpDelete("{id:int}")]
-        [Authorize] // puedes dejarlo o quitarlo para pruebas
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAuditoriaLogin(int id)
         {
-            var success = await _auditoriaLoginService.DeleteAuditoriaLoginAsync(id);
+            try
+            {
+                var success = await _auditoriaLoginService.DeleteAuditoriaLoginAsync(id);
 
-            if (!success)
-                return NotFound(new { message = "AuditoriaLogin no encontrado" });
+                if (!success)
+                    return NotFound(new { message = "Apartamento no encontrado" });
 
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

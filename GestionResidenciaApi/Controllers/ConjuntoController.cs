@@ -23,8 +23,8 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Conjunto>>> GetConjunto()
         {
-            var conjunto = await _conjuntoService.GetConjuntosAsync();
-            return Ok(conjunto);
+            var conjuntos = await _conjuntoService.GetConjuntoAsync();
+            return Ok(conjuntos);
         }
 
         // GET: api/Conjunto/5
@@ -40,7 +40,12 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new ConjuntoCreateDTO
             {
-                ConjuntoId = conjunto.ConjuntoId
+                ConjuntoId = conjunto.ConjuntoId,
+                Nombre = conjunto.Nombre,
+                Direccion = conjunto.Direccion,
+                Ciudad = conjunto.Ciudad,
+                NIT = conjunto.NIT,
+                Telefono = conjunto.Telefono
             };
 
             return Ok(dto);
@@ -71,32 +76,41 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Conjunto>> UpdateConjunto(int id, [FromBody] Conjunto conjunto)
+        public async Task<IActionResult> UpdateConjunto(int id, ConjuntoCreateDTO dto)
         {
-            if (id != conjunto.ConjuntoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedConjunto = await _conjuntoService.UpdateConjuntoAsync(id, dto);
 
-            var updatedConjunto = await _conjuntoService.UpdateConjuntoAsync(id, conjunto);
+            if (updatedConjunto == null)
+                return NotFound();
 
-            if (updatedConjunto is null)
-                return NotFound(new { message = "Conjunto no encontrado" });
-
-            return Ok(updatedConjunto);
+            return Ok(new
+            {
+                message = "Conjunto actualizado correctamente"
+            });
         }
 
         // DELETE: api/Conjunto/5
         [HttpDelete("{id:int}")]
-        [Authorize] // puedes dejarlo o quitarlo para pruebas
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteConjunto(int id)
         {
-            var success = await _conjuntoService.DeleteConjuntoAsync(id);
+            try
+            {
+                var success = await _conjuntoService.DeleteConjuntoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Conjunto no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Conjunto no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

@@ -50,14 +50,24 @@ namespace GestionResidenciaApi.Services
         }
 
         public async Task<bool> DeleteBitacoraVigilanciaAsync(int id)
-    {
+        {
             var existente = await _context.BitacoraVigilancia.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.BitacoraVigilancia.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.BitacoraVigilancia.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de bitácora de vigilancia porque tiene registros relacionados.");
+            }
         }
     }
 

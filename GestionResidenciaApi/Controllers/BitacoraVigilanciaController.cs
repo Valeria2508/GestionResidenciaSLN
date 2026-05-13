@@ -86,22 +86,34 @@ namespace GestionResidenciaApi.Controllers
             if (updatedBitacoraVigilancia is null)
                 return NotFound(new { message = "BitacoraVigilancia no encontrado" });
 
-            return Ok(updatedBitacoraVigilancia);
+            return Ok(new
+            {
+                message = "Bitacora actualizada correctamente"
+            });
         }
 
-        // DELETE: api/Apartamentos/5
+        // DELETE: api/BitacoraVigilancia/5
         [HttpDelete("{id:int}")]
-        [Authorize] // puedes dejarlo o quitarlo para pruebas
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteBitacoraVigilancia(int id)
         {
-            var success = await _bitacoraVigilanciaService.DeleteBitacoraVigilanciaAsync(id);
+            try
+            {
+                var success = await _bitacoraVigilanciaService.DeleteBitacoraVigilanciaAsync(id);
+                if (!success)
+                    return NotFound(new { message = "BitacoraVigilancia no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "BitacoraVigilancia no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

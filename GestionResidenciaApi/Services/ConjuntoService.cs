@@ -2,6 +2,7 @@
 using GestionResidenciaApi.Models;
 using GestionResidenciaApi.Data;
 using Microsoft.EntityFrameworkCore;
+using GestionResidenciaApi.DTOs;
 
 namespace GestionResidenciaApi.Services
 {
@@ -14,7 +15,7 @@ namespace GestionResidenciaApi.Services
             _context = context;
         }
 
-        public async Task<List<GestionResidenciaApi.Models.Conjunto>> GetConjuntosAsync()
+        public async Task<List<GestionResidenciaApi.Models.Conjunto>> GetConjuntoAsync()
         {
             return await _context.Conjunto.ToListAsync();
         }
@@ -32,26 +33,43 @@ namespace GestionResidenciaApi.Services
             return conjunto;
         }
 
-        public async Task<GestionResidenciaApi.Models.Conjunto> UpdateConjuntoAsync(int id, GestionResidenciaApi.Models.Conjunto conjunto)
+        public async Task<Conjunto?> UpdateConjuntoAsync(int id, ConjuntoCreateDTO dto)
         {
-            var existente = await _context.Conjunto.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Conjunto.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Nombre = conjunto.Nombre;
+            existing.Nombre = dto.Nombre;
+            existing.Direccion = dto.Direccion;
+            existing.Ciudad = dto.Ciudad;
+            existing.NIT = dto.NIT;
+            existing.Telefono = dto.Telefono;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteConjuntoAsync(int id)
         {
-            var existente = await _context.Apartamentos.FindAsync(id);
+            var existente = await _context.Conjunto.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Apartamentos.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Conjunto.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de conjuntos porque tiene registros relacionados.");
+            }
         }
     }
 }

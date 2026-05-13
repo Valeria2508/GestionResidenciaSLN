@@ -6,6 +6,7 @@ using GestionResidenciaApi.Data;
 using GestionResidenciaApi.Models;
 using GestionResidenciaApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text.Json.Serialization;
 
 //using GestionResidenciaApi.Services.ApartamentosService;
 
@@ -95,6 +96,12 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
 //configurar swagger para aut de jwt
 builder.Services.AddSwaggerGen(c =>
 {
@@ -132,14 +139,15 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-
-// 1. Manejo de excepciones primero
+app.UseDeveloperExceptionPage();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+// Configure the HTTP request pipeline.
+
+// 1. Manejo de excepciones primero
+
 
 app.UseSwagger();
 app.UseSwaggerUI();

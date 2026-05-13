@@ -51,12 +51,22 @@ namespace GestionResidenciaApi.Services
         public async Task<bool> DeleteApartamentoAsync(int id)
         {
             var existente = await _context.Apartamentos.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Apartamentos.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Apartamentos.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el apartamento porque tiene registros relacionados.");
+            }
         }
     }
 }
