@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,40 @@ namespace GestionResidenciaApi.Services
             return rol;
         }
 
-        public async Task<GestionResidenciaApi.Models.Rol> UpdateRolAsync(int id, GestionResidenciaApi.Models.Rol rol)
+        public async Task<Rol?> UpdateRolAsync(int id, RolDTO dto)
         {
-            var existente = await _context.Rol.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Rol.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Nombre = rol.Nombre;
+            // Do not modify the primary key (RolId) on update
+            existing.Nombre = dto.Nombre;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteRolAsync(int id)
         {
             var existente = await _context.Rol.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Rol.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Rol.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de roles porque tiene registros relacionados.");
+            }
         }
     }
 }

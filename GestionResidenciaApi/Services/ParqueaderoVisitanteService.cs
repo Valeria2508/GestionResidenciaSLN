@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,42 @@ namespace GestionResidenciaApi.Services
             return parqueaderoVisitante;
         }
 
-        public async Task<GestionResidenciaApi.Models.ParqueaderoVisitante> UpdateParqueaderoVisitanteAsync(int id, GestionResidenciaApi.Models.ParqueaderoVisitante parqueaderoVisitante)
+        public async Task<ParqueaderoVisitante?> UpdateParqueaderoVisitanteAsync(int id, ParqueaderoVisitanteDTO dto)
         {
-            var existente = await _context.ParqueaderoVisitante.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.ParqueaderoVisitante.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.FechaHoraSalida = parqueaderoVisitante.FechaHoraSalida;
+            existing.ParqueaderoId = dto.ParqueaderoId;
+            existing.IngresoId = dto.IngresoId;
+            existing.Placa = dto.Placa;
+            existing.FechaHoraIngreso = dto.FechaHoraIngreso;
+            existing.FechaHoraSalida = dto.FechaHoraSalida;
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteParqueaderoVisitanteAsync(int id)
         {
             var existente = await _context.ParqueaderoVisitante.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.ParqueaderoVisitante.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.ParqueaderoVisitante.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de parqueadero visitante porque tiene registros relacionados.");
+            }
         }
     }
 }

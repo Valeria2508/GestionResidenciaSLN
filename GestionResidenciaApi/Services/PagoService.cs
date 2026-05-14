@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,43 @@ namespace GestionResidenciaApi.Services
             return pago;
         }
 
-        public async Task<GestionResidenciaApi.Models.Pago> UpdatePagoAsync(int id, GestionResidenciaApi.Models.Pago pago)
+        public async Task<GestionResidenciaApi.Models.Pago?> UpdatePagoAsync(int id, PagoCreateDTO dto)
         {
-            var existente = await _context.Pago.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Pago.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.FechaPago = pago.FechaPago;
+            existing.UsuarioId = dto.UsuarioId;
+            existing.MetodoPagoId = dto.MetodoPagoId;
+            existing.FechaPago = dto.FechaPago;
+            existing.ValorTotal = dto.ValorTotal;
+            existing.Referencia = dto.Referencia;
+            existing.PagoObservacionId = dto.PagoObservacionId;
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeletePagoAsync(int id)
         {
             var existente = await _context.Pago.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Pago.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Pago.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de pagos porque tiene registros relacionados.");
+            }
         }
     }
 }

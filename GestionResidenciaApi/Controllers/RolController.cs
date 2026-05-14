@@ -52,14 +52,16 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] RolDTO dto)
+        public async Task<ActionResult> Create(RolDTO dto)
         {
             var rol = new Rol
             {
+                // Do not set RolId when creating a new entity - it's an IDENTITY/primary key
                 Nombre = dto.Nombre
             };
 
             await _rolService.CreateRolAsync(rol);
+
             return Ok(rol);
         }
 
@@ -68,17 +70,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Rol>> UpdateRol(int id, [FromBody] Rol rol)
+        public async Task<IActionResult> UpdateRol(int id, RolDTO dto)
         {
-            if (id != rol.RolId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedRol = await _rolService.UpdateRolAsync(id, dto);
 
-            var updatedRol = await _rolService.UpdateRolAsync(id, rol);
+            if (updatedRol == null)
+                return NotFound();
 
-            if (updatedRol is null)
-                return NotFound(new { message = "Rol no encontrado" });
-
-            return Ok(updatedRol);
+            return Ok(new
+            {
+                message = "Rol actualizado correctamente"
+            });
         }
 
         // DELETE: api/Rol/5
@@ -88,12 +90,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteRol(int id)
         {
-            var success = await _rolService.DeleteRolAsync(id);
+            try
+            {
+                var success = await _rolService.DeleteRolAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Rol no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Rol no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

@@ -42,7 +42,11 @@ namespace GestionResidenciaApi.Controllers
             {
                 UsuarioId = usuario.UsuarioId,
                 RolId = usuario.RolId,
-                PersonaId = usuario.PersonaId
+                PersonaId = usuario.PersonaId,
+                Username = usuario.Username,
+                PasswordHash = usuario.PasswordHash,
+                Activo = usuario.Activo,
+                FechaCreacion = usuario.FechaCreacion
             };
 
             return Ok(dto);
@@ -56,6 +60,7 @@ namespace GestionResidenciaApi.Controllers
         {
             var usuario = new Usuario
             {
+                // Do not set UsuarioId when creating a new entity - it's an IDENTITY/primary key
                 RolId = dto.RolId,
                 PersonaId = dto.PersonaId,
                 Username = dto.Username,
@@ -74,17 +79,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Usuario>> UpdateUsuario(int id, [FromBody] Usuario usuario)
+        public async Task<IActionResult> UpdateUsuario(int id, UsuarioCreateDTO dto)
         {
-            if (id != usuario.UsuarioId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedUsuario = await _usuarioService.UpdateUsuarioAsync(id, dto);
 
-            var updatedUsuario = await _usuarioService.UpdateUsuarioAsync(id, usuario);
+            if (updatedUsuario == null)
+                return NotFound();
 
-            if (updatedUsuario is null)
-                return NotFound(new { message = "Usuario no encontrado" });
-
-            return Ok(updatedUsuario);
+            return Ok(new
+            {
+                message = "Usuario actualizado correctamente"
+            });
         }
 
         // DELETE: api/Usuarios/5
@@ -94,12 +99,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
-            var success = await _usuarioService.DeleteUsuarioAsync(id);
+            try
+            {
+                var success = await _usuarioService.DeleteUsuarioAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Usuario no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Usuario no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

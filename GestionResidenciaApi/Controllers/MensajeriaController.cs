@@ -42,8 +42,12 @@ namespace GestionResidenciaApi.Controllers
             {
                 UnidadId = mensajeria.UnidadId,
                 UsuarioId = mensajeria.UsuarioId,
+                Empresa = mensajeria.Empresa,
+                Guia = mensajeria.Guia,
+                Descripcion = mensajeria.Descripcion,
+                FechaRecepcion = mensajeria.FechaRecepcion,
+                FechaEntrega = mensajeria.FechaEntrega
             };
-
             return Ok(dto);
         }
 
@@ -63,6 +67,7 @@ namespace GestionResidenciaApi.Controllers
                 FechaRecepcion = dto.FechaRecepcion,
                 FechaEntrega = dto.FechaEntrega
             };
+
             await _mensajeriaService.CreateMensajeriaAsync(mensajeria);
 
             return Ok(mensajeria);
@@ -73,17 +78,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Mensajeria>> UpdateMensajeria(int id, [FromBody] Mensajeria mensajeria)
+        public async Task<IActionResult> UpdateMensajeria(int id, MensajeriaDTO dto)
         {
-            if (id != mensajeria.MensajeriaId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedMensajeria = await _mensajeriaService.UpdateMensajeriaAsync(id, dto);
 
-            var updatedMensajeria = await _mensajeriaService.UpdateMensajeriaAsync(id, mensajeria);
+            if (updatedMensajeria == null)
+                return NotFound();
 
-            if (updatedMensajeria is null)
-                return NotFound(new { message = "Mensajeria no encontrada" });
-
-            return Ok(updatedMensajeria);
+            return Ok(new
+            {
+                message = "Mensajeria actualizada correctamente"
+            });
         }
 
         // DELETE: api/Mensajeria/5
@@ -93,12 +98,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteMensajeria(int id)
         {
-            var success = await _mensajeriaService.DeleteMensajeriaAsync(id);
+            try
+            {
+                var success = await _mensajeriaService.DeleteMensajeriaAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Mensajeria no encontrada" });
 
-            if (!success)
-                return NotFound(new { message = "Mensajeria no encontrada" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Mensajeria eliminada correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using GestionResidenciaApi.Models;
+﻿using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 
 namespace GestionResidenciaApi.Services
 {
@@ -7,7 +8,7 @@ namespace GestionResidenciaApi.Services
         Task<List<GestionResidenciaApi.Models.TipoEvento>> GetTipoEventoAsync();
         Task<GestionResidenciaApi.Models.TipoEvento> GetTipoEventoByIdAsync(int id);
         Task<GestionResidenciaApi.Models.TipoEvento> CreateTipoEventoAsync(GestionResidenciaApi.Models.TipoEvento tipoEvento);
-        Task<GestionResidenciaApi.Models.TipoEvento> UpdateTipoEventoAsync(int id, GestionResidenciaApi.Models.TipoEvento tipoEvento);
+        Task<GestionResidenciaApi.Models.TipoEvento?> UpdateTipoEventoAsync(int id, TipoEventoDTO dto);
         Task<bool> DeleteTipoEventoAsync(int id);
     }
 }

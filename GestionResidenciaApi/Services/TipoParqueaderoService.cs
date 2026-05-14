@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,40 @@ namespace GestionResidenciaApi.Services
             return tipoParqueadero;
         }
 
-        public async Task<GestionResidenciaApi.Models.TipoParqueadero> UpdateTipoParqueaderoAsync(int id, GestionResidenciaApi.Models.TipoParqueadero tipoParqueadero)
+        public async Task<GestionResidenciaApi.Models.TipoParqueadero?> UpdateTipoParqueaderoAsync(int id, TipoParqueaderoCreateDTO dto)
         {
-            var existente = await _context.TipoParqueadero.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.TipoParqueadero.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Nombre = tipoParqueadero.Nombre;
+            // Do not modify the primary key (TipoParqueaderoId) on update
+            existing.Nombre = dto.Nombre;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteTipoParqueaderoAsync(int id)
         {
             var existente = await _context.TipoParqueadero.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.TipoParqueadero.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.TipoParqueadero.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de tipo de parqueadero porque tiene registros relacionados.");
+            }
         }
     }
 }

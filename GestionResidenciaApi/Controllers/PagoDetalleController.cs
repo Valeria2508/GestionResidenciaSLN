@@ -40,8 +40,9 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new PagoDetalleDTO
             {
+                CuotaId = pagoDetalle.CuotaId,
                 PagoId = pagoDetalle.PagoId,
-                CuotaId = pagoDetalle.CuotaId
+                ValorAbonado = pagoDetalle.ValorAbonado
             };
 
             return Ok(dto);
@@ -53,16 +54,29 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Create(PagoDetalleDTO dto)
         {
-            var pagoDetalle = new PagoDetalle
+            try
             {
-                PagoId = dto.PagoId,
-                CuotaId = dto.CuotaId,
-                ValorAbonado = dto.ValorAbonado
-            };
+                var pagoDetalle = new PagoDetalle
+                {
+                    CuotaId = dto.CuotaId,
+                    PagoId = dto.PagoId,
+                    ValorAbonado = dto.ValorAbonado
+                };
 
-            await _pagoDetalleService.CreatePagoDetalleAsync(pagoDetalle);
+                await _pagoDetalleService.CreatePagoDetalleAsync(pagoDetalle);
 
-            return Ok(pagoDetalle);
+                return Ok(new
+                {
+                    message = "Pago detalle creado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         // PUT: api/PagoDetalle/5
@@ -70,17 +84,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PagoDetalle>> UpdatePagoDetalle(int id, [FromBody] PagoDetalle pagoDetalle)
+        public async Task<IActionResult> UpdatePagoDetalle(int id, PagoDetalleDTO dto)
         {
-            if (id != pagoDetalle.PagoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedPagoDetalle = await _pagoDetalleService.UpdatePagoDetalleAsync(id, dto);
 
-            var updatedPagoDetalle = await _pagoDetalleService.UpdatePagoDetalleAsync(id, pagoDetalle);
+            if (updatedPagoDetalle == null)
+                return NotFound();
 
-            if (updatedPagoDetalle is null)
-                return NotFound(new { message = "PagoDetalle no encontrado" });
-
-            return Ok(updatedPagoDetalle);
+            return Ok(new
+            {
+                message = "PagoDetalle actualizado correctamente"
+            });
         }
 
         // DELETE: api/PagoDetalle/5
@@ -90,12 +104,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeletePagoDetalle(int id)
         {
-            var success = await _pagoDetalleService.DeletePagoDetalleAsync(id);
+            try
+            {
+                var success = await _pagoDetalleService.DeletePagoDetalleAsync(id);
+                if (!success)
+                    return NotFound(new { message = "PagoDetalle no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "PagoDetalle no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

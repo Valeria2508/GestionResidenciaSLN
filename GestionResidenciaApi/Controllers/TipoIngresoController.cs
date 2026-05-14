@@ -40,7 +40,8 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new TipoIngresoDTO
             {
-                TipoIngresoId = tipoIngreso.TipoIngresoId
+                TipoIngresoId = tipoIngreso.TipoIngresoId,
+                Nombre = tipoIngreso.Nombre
             };
 
             return Ok(dto);
@@ -50,14 +51,16 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] TipoIngresoDTO dto)
+        public async Task<ActionResult> Create(TipoIngresoDTO dto)
         {
             var tipoIngreso = new TipoIngreso
             {
+                // Do not set TipoIngresoId when creating a new entity - it's an IDENTITY/primary key
                 Nombre = dto.Nombre
             };
 
             await _tipoIngresoService.CreateTipoIngresoAsync(tipoIngreso);
+
             return Ok(tipoIngreso);
         }
 
@@ -66,17 +69,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TipoIngreso>> UpdateTipoIngreso(int id, [FromBody] TipoIngreso tipoIngreso)
+        public async Task<IActionResult> UpdateTipoIngreso(int id, TipoIngresoDTO dto)
         {
-            if (id != tipoIngreso.TipoIngresoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedTipoIngreso = await _tipoIngresoService.UpdateTipoIngresoAsync(id, dto);
 
-            var updatedTipoIngreso = await _tipoIngresoService.UpdateTipoIngresoAsync(id, tipoIngreso);
+            if (updatedTipoIngreso == null)
+                return NotFound();
 
-            if (updatedTipoIngreso is null)
-                return NotFound(new { message = "TipoIngreso no encontrado" });
-
-            return Ok(updatedTipoIngreso);
+            return Ok(new
+            {
+                message = "TipoIngreso actualizado correctamente"
+            });
         }
 
         // DELETE: api/TipoIngreso/5
@@ -86,12 +89,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteTipoIngreso(int id)
         {
-            var success = await _tipoIngresoService.DeleteTipoIngresoAsync(id);
+            try
+            {
+                var success = await _tipoIngresoService.DeleteTipoIngresoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "TipoIngreso no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "TipoIngreso no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

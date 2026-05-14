@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,43 @@ namespace GestionResidenciaApi.Services
             return mantenimiento;
         }
 
-        public async Task<GestionResidenciaApi.Models.Mantenimiento> UpdateMantenimientoAsync(int id, GestionResidenciaApi.Models.Mantenimiento mantenimiento)
+        public async Task<GestionResidenciaApi.Models.Mantenimiento?> UpdateMantenimientoAsync(int id, MantenimientoDTO dto)
         {
-            var existente = await _context.Mantenimiento.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Mantenimiento.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Fecha = mantenimiento.Fecha;
+            
+            existing.Proveedor = dto.Proveedor;
+            existing.Fecha = dto.Fecha;
+            existing.Descripcion = dto.Descripcion;
+            existing.Costo = dto.Costo;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteMantenimientoAsync(int id)
         {
             var existente = await _context.Mantenimiento.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Mantenimiento.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Mantenimiento.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de mantenimiento porque tiene registros relacionados.");
+            }
         }
     }
 }

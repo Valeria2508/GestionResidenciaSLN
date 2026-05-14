@@ -1,4 +1,5 @@
-﻿using GestionResidenciaApi.Models;
+﻿using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 
 namespace GestionResidenciaApi.Services
 {
@@ -7,7 +8,7 @@ namespace GestionResidenciaApi.Services
         Task<List<GestionResidenciaApi.Models.Persona>> GetPersonaAsync();
         Task<GestionResidenciaApi.Models.Persona> GetPersonaByIdAsync(int id);
         Task<GestionResidenciaApi.Models.Persona> CreatePersonaAsync(GestionResidenciaApi.Models.Persona persona);
-        Task<GestionResidenciaApi.Models.Persona> UpdatePersonaAsync(int id, GestionResidenciaApi.Models.Persona persona);
+        Task<GestionResidenciaApi.Models.Persona> UpdatePersonaAsync(int id, PersonaDTO dto);
         Task<bool> DeletePersonaAsync(int id);
     }
 }

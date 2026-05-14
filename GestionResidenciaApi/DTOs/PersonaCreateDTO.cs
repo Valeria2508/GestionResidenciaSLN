@@ -2,7 +2,6 @@
 {
     public class PersonaDTO
     {
-        public int PersonaId { get; set; }
         public string Nombre { get; set; }
         public string TipoDocumento { get; set; }
         public string NumeroDocumento { get; set; }

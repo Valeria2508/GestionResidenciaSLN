@@ -85,22 +85,32 @@ namespace GestionResidenciaApi.Controllers
             if (updatedApartamento is null)
                 return NotFound(new { message = "Apartamento no encontrado" });
 
-            return Ok(updatedApartamento);
+            return Ok(new
+            {
+                message = "Apartamento actualizado correctamente"
+            });
         }
 
         // DELETE: api/Apartamentos/5
         [HttpDelete("{id:int}")]
-        /*[Authorize]*/ // puedes dejarlo o quitarlo para pruebas
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteApartamento(int id)
         {
-            var success = await _apartamentosService.DeleteApartamentoAsync(id);
+            try
+            {
+                var success = await _apartamentosService.DeleteApartamentoAsync(id);
 
-            if (!success)
-                return NotFound(new { message = "Apartamento no encontrado" });
+                if (!success)
+                    return NotFound(new { message = "Apartamento no encontrado" });
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

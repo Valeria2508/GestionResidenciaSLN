@@ -41,17 +41,19 @@ namespace GestionResidenciaApi.Controllers
             var dto = new ParqueaderoDTO
             {
                 UnidadId = parqueadero.UnidadId,
-                TipoParqueaderoId = parqueadero.TipoParqueaderoId
+                TipoParqueaderoId = parqueadero.TipoParqueaderoId,
+                EstadoId = parqueadero.EstadoId,
+                Numero = parqueadero.Numero
             };
+            
 
             return Ok(dto);
         }
-
         // POST: api/Parqueadero
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] ParqueaderoDTO dto)
+        public async Task<ActionResult> Create(ParqueaderoDTO dto)
         {
             var parqueadero = new Parqueadero
             {
@@ -60,8 +62,8 @@ namespace GestionResidenciaApi.Controllers
                 EstadoId = dto.EstadoId,
                 Numero = dto.Numero
             };
-
             await _parqueaderoService.CreateParqueaderoAsync(parqueadero);
+
             return Ok(parqueadero);
         }
 
@@ -70,17 +72,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Parqueadero>> UpdateParqueadero(int id, [FromBody] Parqueadero parqueadero)
+        public async Task<IActionResult> UpdateParqueadero(int id, ParqueaderoDTO dto)
         {
-            if (id != parqueadero.UnidadId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedParqueadero = await _parqueaderoService.UpdateParqueaderoAsync(id, dto);
 
-            var updatedParqueadero = await _parqueaderoService.UpdateParqueaderoAsync(id, parqueadero);
+            if (updatedParqueadero == null)
+                return NotFound();
 
-            if (updatedParqueadero is null)
-                return NotFound(new { message = "Parqueadero no encontrado" });
-
-            return Ok(updatedParqueadero);
+            return Ok(new
+            {
+                message = "Parqueadero actualizado correctamente"
+            });
         }
 
         // DELETE: api/Parqueadero/5
@@ -90,12 +92,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteParqueadero(int id)
         {
-            var success = await _parqueaderoService.DeleteParqueaderoAsync(id);
+            try
+            {
+                var success = await _parqueaderoService.DeleteParqueaderoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Parqueadero no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Parqueadero no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

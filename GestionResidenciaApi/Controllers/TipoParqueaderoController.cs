@@ -51,14 +51,16 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] TipoParqueaderoCreateDTO dto)
+        public async Task<ActionResult> Create(TipoParqueaderoCreateDTO dto)
         {
             var tipoParqueadero = new TipoParqueadero
             {
+                // Do not set TipoParqueaderoId when creating a new entity - it's an IDENTITY/primary key
                 Nombre = dto.Nombre
             };
 
             await _tipoParqueaderoService.CreateTipoParqueaderoAsync(tipoParqueadero);
+
             return Ok(tipoParqueadero);
         }
 
@@ -67,17 +69,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TipoParqueadero>> UpdateTipoParqueadero(int id, [FromBody] TipoParqueadero tipoParqueadero)
+        public async Task<IActionResult> UpdateTipoParqueadero(int id, TipoParqueaderoCreateDTO dto)
         {
-            if (id != tipoParqueadero.TipoParqueaderoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedTipoParqueadero = await _tipoParqueaderoService.UpdateTipoParqueaderoAsync(id, dto);
 
-            var updatedTipoParqueadero = await _tipoParqueaderoService.UpdateTipoParqueaderoAsync(id, tipoParqueadero);
+            if (updatedTipoParqueadero == null)
+                return NotFound();
 
-            if (updatedTipoParqueadero is null)
-                return NotFound(new { message = "TipoParqueadero no encontrado" });
-
-            return Ok(updatedTipoParqueadero);
+            return Ok(new
+            {
+                message = "TipoParqueadero actualizado correctamente"
+            });
         }
 
         // DELETE: api/TipoParqueadero/5
@@ -87,12 +89,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteTipoParqueadero(int id)
         {
-            var success = await _tipoParqueaderoService.DeleteTipoParqueaderoAsync(id);
+            try
+            {
+                var success = await _tipoParqueaderoService.DeleteTipoParqueaderoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "TipoParqueadero no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "TipoParqueadero no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

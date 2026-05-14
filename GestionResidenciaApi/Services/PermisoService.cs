@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,40 @@ namespace GestionResidenciaApi.Services
             return permiso;
         }
 
-        public async Task<GestionResidenciaApi.Models.Permiso> UpdatePermisoAsync(int id, GestionResidenciaApi.Models.Permiso permiso)
+        public async Task<Permiso?> UpdatePermisoAsync(int id, PermisoDTO dto)
         {
-            var existente = await _context.Permiso.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Permiso.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Nombre = permiso.Nombre;
+            // 
+            existing.Nombre = dto.Nombre;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeletePermisoAsync(int id)
         {
             var existente = await _context.Permiso.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Permiso.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Permiso.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de permisos porque tiene registros relacionados.");
+            }
         }
     }
 }

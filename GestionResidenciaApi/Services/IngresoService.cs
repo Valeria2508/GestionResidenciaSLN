@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -20,7 +21,8 @@ namespace GestionResidenciaApi.Services
 
         public async Task<GestionResidenciaApi.Models.Ingreso> GetIngresoByIdAsync(int id)
         {
-            return await _context.Ingreso.FindAsync(id);
+            var existente = await _context.Ingreso.FindAsync(id);
+            return existente;
         }
 
         public async Task<GestionResidenciaApi.Models.Ingreso> CreateIngresoAsync(GestionResidenciaApi.Models.Ingreso ingreso)
@@ -30,26 +32,43 @@ namespace GestionResidenciaApi.Services
             return ingreso;
         }
 
-        public async Task<GestionResidenciaApi.Models.Ingreso> UpdateIngresoAsync(int id, GestionResidenciaApi.Models.Ingreso ingreso)
+        public async Task<Ingreso?> UpdateIngresoAsync(int id, IngresoDTO dto)
         {
-            var existente = await _context.Ingreso.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Ingreso.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.FechaHoraSalida = ingreso.FechaHoraSalida;
+            existing.NombrePersona = dto.NombrePersona;
+            existing.Documento = dto.Documento;
+            existing.Vehiculo = dto.Vehiculo;
+            existing.FechaHoraIngreso = dto.FechaIngreso;
+            existing.FechaHoraSalida = dto.FechaSalida;
+            existing.Observacion = dto.Observacion;
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
-        public async Task<bool> DeleteIngresoAsync  (int id)
+        public async Task<bool> DeleteIngresoAsync(int id)
         {
             var existente = await _context.Ingreso.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Ingreso.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Ingreso.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de ingresos porque tiene registros relacionados.");
+            }
         }
     }
 }

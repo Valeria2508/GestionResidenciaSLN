@@ -52,13 +52,13 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpPost]
         public async Task<ActionResult> Create(TorreCreateDTO dto)
         {
             var torre = new Torre
             {
-                ConjuntoId = dto.ConjuntoId,
-                Nombre = dto.Nombre
+                // Do not set TorreId when creating a new entity - it's an IDENTITY/primary key
+                Nombre = dto.Nombre,
+                ConjuntoId = dto.ConjuntoId
             };
 
             await _torreService.CreateTorreAsync(torre);
@@ -71,17 +71,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Torre>> UpdateTorre(int id, [FromBody] Torre torre)
+        public async Task<IActionResult> UpdateTorre    (int id, TorreCreateDTO dto)
         {
-            if (id != torre.TorreId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedTorre = await _torreService.UpdateTorreAsync(id, dto);
 
-            var updatedTorre = await _torreService.UpdateTorreAsync(id, torre);
+            if (updatedTorre == null)
+                return NotFound();
 
-            if (updatedTorre is null)
-                return NotFound(new { message = "Torre no encontrada" });
-
-            return Ok(updatedTorre);
+            return Ok(new
+            {
+                message = "Torre actualizada correctamente"
+            });
         }
 
         // DELETE: api/Torre/5
@@ -91,12 +91,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteTorre(int id)
         {
-            var success = await _torreService.DeleteTorreAsync(id);
+            try
+            {
+                var success = await _torreService.DeleteTorreAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Torre no encontrada" });
 
-            if (!success)
-                return NotFound(new { message = "Torre no encontrada" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

@@ -51,33 +51,36 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] TipoMantenimientoCreateDTO dto)
+        public async Task<ActionResult> Create(TipoMantenimientoCreateDTO dto)
         {
             var tipoMantenimiento = new TipoMantenimiento
             {
+                // Do not set TipoMantenimientoId when creating a new entity - it's an IDENTITY/primary key
                 Nombre = dto.Nombre
             };
 
             await _tipoMantenimientoService.CreateTipoMantenimientoAsync(tipoMantenimiento);
+
             return Ok(tipoMantenimiento);
         }
+
 
         // PUT: api/TipoMantenimiento/5
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TipoMantenimiento>> UpdateTipoMantenimiento(int id, [FromBody] TipoMantenimiento tipoMantenimiento)
+        public async Task<IActionResult> UpdateTipoMantenimiento(int id, TipoMantenimientoCreateDTO dto)
         {
-            if (id != tipoMantenimiento.TipoMantenimientoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedTipoMantenimiento = await _tipoMantenimientoService.UpdateTipoMantenimientoAsync(id, dto);
 
-            var updatedTipoMantenimiento = await _tipoMantenimientoService.UpdateTipoMantenimientoAsync(id, tipoMantenimiento);
+            if (updatedTipoMantenimiento == null)
+                return NotFound();
 
-            if (updatedTipoMantenimiento is null)
-                return NotFound(new { message = "TipoMantenimiento no encontrado" });
-
-            return Ok(updatedTipoMantenimiento);
+            return Ok(new
+            {
+                message = "TipoMantenimiento actualizado correctamente"
+            });
         }
 
         // DELETE: api/TipoMantenimiento/5
@@ -87,12 +90,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteTipoMantenimiento(int id)
         {
-            var success = await _tipoMantenimientoService.DeleteTipoMantenimientoAsync(id);
+            try
+            {
+                var success = await _tipoMantenimientoService.DeleteTipoMantenimientoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "TipoMantenimiento no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "TipoMantenimiento no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

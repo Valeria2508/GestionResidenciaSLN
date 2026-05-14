@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,43 @@ namespace GestionResidenciaApi.Services
             return zonaComun;
         }
 
-        public async Task<GestionResidenciaApi.Models.ZonaComun> UpdateZonaComunAsync(int id, GestionResidenciaApi.Models.ZonaComun zonaComun)
+        public async Task<ZonaComun?> UpdateZonaComunAsync(int id, ZonaComunDTO dto)
         {
-            var existente = await _context.ZonaComun.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.ZonaComun.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Capacidad = zonaComun.Capacidad;
+            // Do not modify the primary key (ZonaComunId) on update
+            existing.ConjuntoId = dto.ConjuntoId;
+            existing.Nombre = dto.Nombre;
+            existing.Capacidad = dto.Capacidad;
+            existing.RequierePago = dto.RequierePago;
+            existing.ValorHora = dto.ValorHora;
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteZonaComunAsync(int id)
         {
             var existente = await _context.ZonaComun.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.ZonaComun.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.ZonaComun.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de zonas comunes porque tiene registros relacionados.");
+            }
         }
     }
 }

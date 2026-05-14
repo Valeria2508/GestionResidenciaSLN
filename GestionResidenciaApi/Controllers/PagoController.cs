@@ -42,7 +42,11 @@ namespace GestionResidenciaApi.Controllers
             var dto = new PagoCreateDTO
             {
                 UsuarioId = pago.UsuarioId,
-                MetodoPagoId = pago.MetodoPagoId
+                MetodoPagoId = pago.MetodoPagoId,
+                FechaPago = pago.FechaPago,
+                ValorTotal = pago.ValorTotal,
+                Referencia = pago.Referencia,
+                PagoObservacionId = pago.PagoObservacionId
             };
 
             return Ok(dto);
@@ -75,17 +79,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pago>> UpdatePago(int id, [FromBody] Pago pago)
+        public async Task<IActionResult> UpdatePago(int id, PagoCreateDTO dto)
         {
-            if (id != pago.MetodoPagoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedPago = await _pagoService.UpdatePagoAsync(id, dto);
 
-            var updatedPago = await _pagoService.UpdatePagoAsync(id, pago);
+            if (updatedPago == null)
+                return NotFound();
 
-            if (updatedPago is null)
-                return NotFound(new { message = "Pago no encontrado" });
-
-            return Ok(updatedPago);
+            return Ok(new
+            {
+                message = "Pago actualizado correctamente"
+            });
         }
 
         // DELETE: api/pago/5
@@ -95,12 +99,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeletePago(int id)
         {
-            var success = await _pagoService.DeletePagoAsync(id);
+            try
+            {
+                var success = await _pagoService.DeletePagoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Pago no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Pago no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Pago eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

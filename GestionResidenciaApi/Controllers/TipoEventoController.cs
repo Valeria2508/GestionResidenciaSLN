@@ -40,7 +40,8 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new TipoEventoDTO
             {
-                TipoEventoId = tipoEvento.TipoEventoId
+                TipoEventoId = tipoEvento.TipoEventoId,
+                Nombre = tipoEvento.Nombre
             };
 
             return Ok(dto);
@@ -50,14 +51,16 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] TipoEventoDTO dto)
+        public async Task<ActionResult> Create(TipoEventoDTO dto)
         {
             var tipoEvento = new TipoEvento
             {
+                // Do not set TipoEventoId when creating a new entity - it's an IDENTITY/primary key
                 Nombre = dto.Nombre
             };
 
             await _tipoEventoService.CreateTipoEventoAsync(tipoEvento);
+
             return Ok(tipoEvento);
         }
 
@@ -66,17 +69,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TipoEvento>> UpdateTipoEvento(int id, [FromBody] TipoEvento tipoEvento)
+        public async Task<IActionResult> UpdateTipoEvento(int id, TipoEventoDTO dto)
         {
-            if (id != tipoEvento.TipoEventoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedTipoEvento = await _tipoEventoService.UpdateTipoEventoAsync(id, dto);
 
-            var updatedTipoEvento = await _tipoEventoService.UpdateTipoEventoAsync(id, tipoEvento);
+            if (updatedTipoEvento == null)
+                return NotFound();
 
-            if (updatedTipoEvento is null)
-                return NotFound(new { message = "TipoEvento no encontrado" });
-
-            return Ok(updatedTipoEvento);
+            return Ok(new
+            {
+                message = "TipoEvento actualizado correctamente"
+            });
         }
 
         // DELETE: api/TipoEvento/5
@@ -86,12 +89,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteTipoEvento(int id)
         {
-            var success = await _tipoEventoService.DeleteTipoEventoAsync(id);
+            try
+            {
+                var success = await _tipoEventoService.DeleteTipoEventoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "TipoEvento no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "TipoEvento no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

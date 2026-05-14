@@ -27,13 +27,13 @@ namespace GestionResidenciaApi.Controllers
             return Ok(rolPermiso);
         }
 
-        // GET: api/RolPermiso/5
-        [HttpGet("{id:int}")]
+        // GET: api/RolPermiso/{rolId}/{permisoId}
+        [HttpGet("{rolId:int}/{permisoId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<RolPermisoDTO>> GetRolPermisoById(int id)
+        public async Task<ActionResult<RolPermisoDTO>> GetRolPermisoById(int rolId, int permisoId)
         {
-            var rolPermiso = await _rolPermisoService.GetRolPermisoByIdAsync(id);
+            var rolPermiso = await _rolPermisoService.GetRolPermisoByIdAsync(rolId, permisoId);
 
             if (rolPermiso is null)
                 return NotFound(new { message = "RolPermiso no encontrado" });
@@ -52,8 +52,7 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] RolPermisoDTO dto)
+        public async Task<ActionResult> Create(RolPermisoDTO dto)
         {
             var rolPermiso = new RolPermiso
             {
@@ -62,40 +61,53 @@ namespace GestionResidenciaApi.Controllers
             };
 
             await _rolPermisoService.CreateRolPermisoAsync(rolPermiso);
+
             return Ok(rolPermiso);
         }
 
-        // PUT: api/RolPermiso/5
-        [HttpPut("{id:int}")]
+        // PUT: api/RolPermiso/{rolId}/{permisoId}
+        [HttpPut("{rolId:int}/{permisoId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<RolPermiso>> UpdateRolPermiso(int id, [FromBody] RolPermiso rolPermiso)
+        public async Task<IActionResult> UpdateRolPermiso(int rolId, int permisoId, RolPermisoDTO dto)
         {
-            if (id != rolPermiso.RolId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedRolPermiso = await _rolPermisoService.UpdateRolPermisoAsync(rolId, permisoId, dto);
 
-            var updatedRolPermiso = await _rolPermisoService.UpdateRolPermisoAsync(id, rolPermiso);
+            if (updatedRolPermiso == null)
+                return NotFound();
 
-            if (updatedRolPermiso is null)
-                return NotFound(new { message = "RolPermiso no encontrado" });
-
-            return Ok(updatedRolPermiso);
+            return Ok(new
+            {
+                message = "RolPermiso actualizado correctamente"
+            });
         }
 
-        // DELETE: api/RolPermiso/5
-        [HttpDelete("{id:int}")]
+        // DELETE: api/RolPermiso/{rolId}/{permisoId}
+        [HttpDelete("{rolId:int}/{permisoId:int}")]
         [Authorize] // puedes dejarlo o quitarlo para pruebas
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteRolPermiso(int id)
+        public async Task<IActionResult> DeleteRolPermiso(int rolId, int permisoId)
         {
-            var success = await _rolPermisoService.DeleteRolPermisoAsync(id);
+            try
+            {
+                var success = await _rolPermisoService.DeleteRolPermisoAsync(rolId, permisoId);
+                if (!success)
+                    return NotFound(new { message = "RolPermiso no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "RolPermiso no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

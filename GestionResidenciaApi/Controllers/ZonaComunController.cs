@@ -41,7 +41,11 @@ namespace GestionResidenciaApi.Controllers
             var dto = new ZonaComunDTO
             {
                 ZonaComunId = zonaComun.ZonaComunId,
-                ConjuntoId = zonaComun.ConjuntoId
+                ConjuntoId = zonaComun.ConjuntoId,
+                Nombre = zonaComun.Nombre,
+                Capacidad = zonaComun.Capacidad,
+                RequierePago = zonaComun.RequierePago,
+                ValorHora = zonaComun.ValorHora
             };
 
             return Ok(dto);
@@ -56,6 +60,7 @@ namespace GestionResidenciaApi.Controllers
         {
             var zonaComun = new ZonaComun
             {
+                // Do not set ZonaComunId when creating a new entity - it's an IDENTITY/primary key
                 ConjuntoId = dto.ConjuntoId,
                 Nombre = dto.Nombre,
                 Capacidad = dto.Capacidad,
@@ -73,17 +78,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<ZonaComun>> UpdateZonaComun(int id, [FromBody] ZonaComun zonaComun)
+        public async Task<IActionResult> UpdateZonaComun(int id, ZonaComunDTO dto)
         {
-            if (id != zonaComun.ZonaComunId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedZonaComun = await _zonaComunService.UpdateZonaComunAsync(id, dto);
 
-            var updatedZonaComun = await _zonaComunService.UpdateZonaComunAsync(id, zonaComun);
+            if (updatedZonaComun == null)
+                return NotFound();
 
-            if (updatedZonaComun is null)
-                return NotFound(new { message = "Zona común no encontrada" });
-
-            return Ok(updatedZonaComun);
+            return Ok(new
+            {
+                message = "Zona común actualizada correctamente"
+            });
         }
 
         // DELETE: api/ZonaComun/5
@@ -93,12 +98,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteZonaComun(int id)
         {
-            var success = await _zonaComunService.DeleteZonaComunAsync(id);
+            try
+            {
+                var success = await _zonaComunService.DeleteZonaComunAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Zona común no encontrada" });
 
-            if (!success)
-                return NotFound(new { message = "Zona común no encontrada" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Zona común eliminada correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

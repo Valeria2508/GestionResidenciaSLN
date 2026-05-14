@@ -28,62 +28,60 @@ namespace GestionResidenciaApi.Controllers
             return Ok(permiso);
         }
 
-        // GET: api/Permiso/5
-        //[HttpGet("{id:int}")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<ActionResult<PermiaoD>> GetApartamentoById(int id)
-        //{
-        //    var apartamento = await _apartamentosService.GetApartamentoByIdAsync(id);
+        // GET: api/Conjunto/5
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PermisoDTO>> GetPermisoById(int id)
+        {
+            var permiso = await _permisoService.GetPermisoByIdAsync(id);
 
-        //    if (apartamento is null)
-        //        return NotFound(new { message = "Apartamento no encontrado" });
+            if (permiso is null)
+                return NotFound(new { message = "Permiso no encontrado" });
 
-        //    var dto = new ApartamentoResponseDTO
-        //    {
-        //        UnidadId = apartamento.UnidadId,
-        //        TorreId = apartamento.TorreId,
-        //        Numero = apartamento.Numero,
-        //        Tipo = apartamento.Tipo,
-        //        Area = apartamento.Area
-        //    };
+            var dto = new PermisoDTO
+            {
+                PermisoId = permiso.PermisoId,
+                Nombre = permiso.Nombre
+            };
 
-        //    return Ok(dto);
-        //}
+            return Ok(dto);
+        }
+
 
         // POST: api/Permiso
         [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> CreatePermiso(PermisoDTO dto)
+        public async Task<ActionResult> Create(PermisoDTO dto)
         {
             var permiso = new Permiso
             {
-                Nombre = dto.Nombre,
+                PermisoId = dto.PermisoId,
+                Nombre = dto.Nombre
             };
 
             await _permisoService.CreatePermisoAsync(permiso);
 
             return Ok(permiso);
         }
-
         // PUT: api/Permiso/5
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Permiso>> UpdatePermiso(int id, [FromBody] Permiso permiso)
+        public async Task<IActionResult> UpdatePermiso(int id, PermisoDTO dto)
         {
-            if (id != permiso.PermisoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedPermiso = await _permisoService.UpdatePermisoAsync(id, dto);
 
-            var updatedPermiso = await _permisoService.UpdatePermisoAsync(id, permiso);
+            if (updatedPermiso == null)
+                return NotFound();
 
-            if (updatedPermiso is null)
-                return NotFound(new { message = "Permiso no encontrado" });
-
-            return Ok(updatedPermiso);
+            return Ok(new
+            {
+                message = "Permiso actualizado correctamente"
+            });
         }
 
         // DELETE: api/Permiso/5
@@ -93,12 +91,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeletePermiso(int id)
         {
-            var success = await _permisoService.DeletePermisoAsync(id);
+            try
+            {
+                var success = await _permisoService.DeletePermisoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Permiso no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Permiso no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

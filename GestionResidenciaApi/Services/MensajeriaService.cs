@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,44 @@ namespace GestionResidenciaApi.Services
             return mensajeria;
         }
 
-        public async Task<GestionResidenciaApi.Models.Mensajeria> UpdateMensajeriaAsync(int id, GestionResidenciaApi.Models.Mensajeria mensajeria)
+        public async Task<Mensajeria?> UpdateMensajeriaAsync(int id, MensajeriaDTO dto)
         {
-            var existente = await _context.Mensajeria.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Mensajeria.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Descripcion = mensajeria.Descripcion;
+            existing.UnidadId = dto.UnidadId;
+            existing.UsuarioId = dto.UsuarioId;
+            existing.Empresa = dto.Empresa;
+            existing.Guia = dto.Guia;
+            existing.Descripcion = dto.Descripcion;
+            existing.FechaRecepcion = dto.FechaRecepcion;
+            existing.FechaEntrega = dto.FechaEntrega;
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteMensajeriaAsync(int id)
         {
             var existente = await _context.Mensajeria.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Mensajeria.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Mensajeria.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de mensajeria porque tiene registros relacionados.");
+            }
         }
     }
 }

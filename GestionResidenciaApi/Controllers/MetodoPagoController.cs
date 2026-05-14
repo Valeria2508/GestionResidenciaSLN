@@ -41,7 +41,7 @@ namespace GestionResidenciaApi.Controllers
             var dto = new MetodoPagoDTO
             {
                 Nombre = metodoPago.Nombre,
-                Descripcion = metodoPago.Descripcion    
+                Descripcion = metodoPago.Descripcion
             };
 
             return Ok(dto);
@@ -70,17 +70,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<MetodoPago>> UpdateMetodoPago(int id, [FromBody] MetodoPago metodoPago)
+        public async Task<IActionResult> UpdateMetodoPago(int id, MetodoPagoDTO dto)
         {
-            if (id != metodoPago.MetodoPagoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedMetodoPago = await _metodoPagoService.UpdateMetodoPagoAsync(id, dto);
 
-            var updatedMetodoPago = await _metodoPagoService.UpdateMetodoPagoAsync(id, metodoPago);
+            if (updatedMetodoPago == null)
+                return NotFound();
 
-            if (updatedMetodoPago is null)
-                return NotFound(new { message = "Metodo de pago no encontrado" });
-
-            return Ok(updatedMetodoPago);
+            return Ok(new
+            {
+                message = "Metodo de pago actualizado correctamente"
+            });
         }
 
         // DELETE: api/MetodoPago/5
@@ -90,12 +90,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteMetodoPago(int id)
         {
-            var success = await _metodoPagoService.DeleteMetodoPagoAsync(id);
+            try
+            {
+                var success = await _metodoPagoService.DeleteMetodoPagoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Metodo de pago no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Metodo de pago no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

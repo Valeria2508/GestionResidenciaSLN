@@ -1,4 +1,5 @@
-﻿using GestionResidenciaApi.Models;
+﻿using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 
 namespace GestionResidenciaApi.Services
 {
@@ -7,7 +8,7 @@ namespace GestionResidenciaApi.Services
         Task<List<GestionResidenciaApi.Models.Ingreso>> GetIngresoAsync();
         Task<GestionResidenciaApi.Models.Ingreso> GetIngresoByIdAsync(int id);
         Task<GestionResidenciaApi.Models.Ingreso> CreateIngresoAsync(GestionResidenciaApi.Models.Ingreso ingreso);
-        Task<GestionResidenciaApi.Models.Ingreso> UpdateIngresoAsync(int id, GestionResidenciaApi.Models.Ingreso ingreso);
+        Task<GestionResidenciaApi.Models.Ingreso?> UpdateIngresoAsync(int id, IngresoDTO dto);
         Task<bool> DeleteIngresoAsync(int id);
     }
 }
