@@ -1,4 +1,5 @@
-﻿using GestionResidenciaApi.Models;
+﻿using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 
 namespace GestionResidenciaApi.Services
 {
@@ -7,7 +8,7 @@ namespace GestionResidenciaApi.Services
         Task<List<GestionResidenciaApi.Models.TipoMantenimiento>> GetTipoMantenimientoAsync();
         Task<GestionResidenciaApi.Models.TipoMantenimiento> GetTipoMantenimientoByIdAsync(int id);
         Task<GestionResidenciaApi.Models.TipoMantenimiento> CreateTipoMantenimientoAsync(GestionResidenciaApi.Models.TipoMantenimiento tipoMantenimiento);
-        Task<GestionResidenciaApi.Models.TipoMantenimiento> UpdateTipoMantenimientoAsync(int id, GestionResidenciaApi.Models.TipoMantenimiento tipoMantenimiento);
+        Task<GestionResidenciaApi.Models.TipoMantenimiento?> UpdateTipoMantenimientoAsync(int id, TipoMantenimientoCreateDTO dto);
         Task<bool> DeleteTipoMantenimientoAsync(int id);
     }
 }

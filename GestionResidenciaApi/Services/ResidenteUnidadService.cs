@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,45 @@ namespace GestionResidenciaApi.Services
             return residenteUnidad;
         }
 
-        public async Task<GestionResidenciaApi.Models.ResidenteUnidad> UpdateResidenteUnidadAsync(int id, GestionResidenciaApi.Models.ResidenteUnidad residenteUnidad)
+        public async Task<ResidenteUnidad?> UpdateResidenteUnidadAsync(int id, ResidenteUnidadDTO dto)
         {
-            var existente = await _context.ResidenteUnidad.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.ResidenteUnidad.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.EsPropietario = residenteUnidad.EsPropietario;
+            // Do not modify the identity primary key (ResidenteUnidadId) on update
+            existing.UnidadId = dto.UnidadId;
+            existing.UsuarioId = dto.UsuarioId;
+            existing.EsPropietario = dto.EsPropietario;
+            existing.FechaInicio = dto.FechaInicio;
+            existing.FechaFin = dto.FechaFin;
+            existing.Observacion = dto.Observacion;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteResidenteUnidadAsync(int id)
         {
             var existente = await _context.ResidenteUnidad.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.ResidenteUnidad.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.ResidenteUnidad.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de residenteUnidad porque tiene registros relacionados.");
+            }
         }
     }
 }

@@ -42,7 +42,11 @@ namespace GestionResidenciaApi.Controllers
             {
                 ZonaComunId = reserva.ZonaComunId,
                 UsuarioId = reserva.UsuarioId,
-                EstadoId = reserva.EstadoId
+                EstadoId = reserva.EstadoId,
+                Fecha = reserva.Fecha,
+                HoraInicio = reserva.HoraInicio,
+                HoraFin = reserva.HoraFin,
+                Observaciones = reserva.Observacion
             };
 
             return Ok(dto);
@@ -53,7 +57,7 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] ReservaDTO dto)
+        public async Task<ActionResult> Create(ReservaDTO dto)
         {
             var reserva = new Reserva
             {
@@ -67,6 +71,7 @@ namespace GestionResidenciaApi.Controllers
             };
 
             await _reservaService.CreateReservaAsync(reserva);
+
             return Ok(reserva);
         }
 
@@ -75,17 +80,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Reserva>> UpdateReserva(int id, [FromBody] Reserva reserva)
+        public async Task<IActionResult> UpdateReserva(int id, ReservaDTO dto)
         {
-            if (id != reserva.ZonaComunId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedReserva = await _reservaService.UpdateReservaAsync(id, dto);
 
-            var updatedReserva = await _reservaService.UpdateReservaAsync(id, reserva);
+            if (updatedReserva == null)
+                return NotFound();
 
-            if (updatedReserva is null)
-                return NotFound(new { message = "Reserva no encontrada" });
-
-            return Ok(updatedReserva);
+            return Ok(new
+            {
+                message = "Reserva actualizada correctamente"
+            });
         }
 
         // DELETE: api/Reserva/5
@@ -95,12 +100,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteReserva(int id)
         {
-            var success = await _reservaService.DeleteReservaAsync(id);
+            try
+            {
+                var success = await _reservaService.DeleteReservaAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Reserva no encontrada" });
 
-            if (!success)
-                return NotFound(new { message = "Reserva no encontrada" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Reserva eliminada correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

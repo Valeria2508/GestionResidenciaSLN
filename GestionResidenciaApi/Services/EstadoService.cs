@@ -40,10 +40,10 @@ namespace GestionResidenciaApi.Services
             if (existing == null)
                 return null;
 
+            // Do not modify the primary key (EstadoId) on update
             existing.Nombre = dto.Nombre;
             existing.Descripcion = dto.Descripcion;
             existing.TipoEstado = dto.TipoEstado;
-            existing.EstadoId = dto.EstadoId;
             await _context.SaveChangesAsync();
 
             return existing;

@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,40 @@ namespace GestionResidenciaApi.Services
             return metodoPago;
         }
 
-        public async Task<GestionResidenciaApi.Models.MetodoPago> UpdateMetodoPagoAsync(int id, GestionResidenciaApi.Models.MetodoPago metodoPago)
+        public async Task<MetodoPago?> UpdateMetodoPagoAsync(int id, MetodoPagoDTO dto)
         {
-            var existente = await _context.MetodoPago.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.MetodoPago.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Descripcion = metodoPago.Descripcion;
+            existing.Nombre = dto.Nombre;
+            existing.Descripcion = dto.Descripcion;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteMetodoPagoAsync(int id)
         {
             var existente = await _context.MetodoPago.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.MetodoPago.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.MetodoPago.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de métodos de pago porque tiene registros relacionados.");
+            }
         }
     }
 }

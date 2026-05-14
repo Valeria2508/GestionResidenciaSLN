@@ -40,12 +40,16 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new VisitanteDTO
             {
-                VisitanteId = visitante.VisitanteId
+                VisitanteId = visitante.VisitanteId,
+                Nombre = visitante.Nombre,
+                TipoDocumento = visitante.TipoDocumento,
+                Documento = visitante.Documento,
+                Telefono = visitante.Telefono,
+                FechaRegistro = visitante.FechaRegistro
             };
 
             return Ok(dto);
         }
-
         // POST: api/Visitante
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -54,6 +58,7 @@ namespace GestionResidenciaApi.Controllers
         {
             var visitante = new Visitante
             {
+                VisitanteId = dto.VisitanteId,
                 Nombre = dto.Nombre,
                 TipoDocumento = dto.TipoDocumento,
                 Documento = dto.Documento,
@@ -71,17 +76,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Visitante>> UpdateVisitante(int id, [FromBody] Visitante visitante)
+        public async Task<IActionResult> UpdateVisitante(int id, VisitanteDTO dto)
         {
-            if (id != visitante.VisitanteId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedVisitante = await _visitanteService.UpdateVisitanteAsync(id, dto);
 
-            var updatedVisitante = await _visitanteService.UpdateVisitanteAsync(id, visitante);
+            if (updatedVisitante == null)
+                return NotFound();
 
-            if (updatedVisitante is null)
-                return NotFound(new { message = "Visitante no encontrado" });
-
-            return Ok(updatedVisitante);
+            return Ok(new
+            {
+                message = "Visitante actualizado correctamente"
+            });
         }
 
         // DELETE: api/Visitante/5
@@ -91,12 +96,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteVisitante(int id)
         {
-            var success = await _visitanteService.DeleteVisitanteAsync(id);
+            try
+            {
+                var success = await _visitanteService.DeleteVisitanteAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Visitante no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Visitante no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

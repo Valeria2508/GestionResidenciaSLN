@@ -40,7 +40,11 @@ namespace GestionResidenciaApi.Controllers
 
             var dto = new PersonaDTO
             {
-                PersonaId = persona.PersonaId,
+                Nombre = persona.Nombre,
+                TipoDocumento = persona.TipoDocumento,
+                NumeroDocumento = persona.NumeroDocumento,
+                Telefono = persona.Telefono,
+                Correo = persona.Correo
             };
 
             return Ok(dto);
@@ -50,7 +54,7 @@ namespace GestionResidenciaApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] PersonaDTO dto)
+        public async Task<ActionResult> Create(PersonaDTO dto)
         {
             var persona = new Persona
             {
@@ -60,7 +64,9 @@ namespace GestionResidenciaApi.Controllers
                 Telefono = dto.Telefono,
                 Correo = dto.Correo
             };
+
             await _personaService.CreatePersonaAsync(persona);
+
             return Ok(persona);
         }
 
@@ -69,17 +75,17 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Persona>> UpdatePersona(int id, [FromBody] Persona persona)
+        public async Task<IActionResult> UpdatePersona(int id, PersonaDTO dto)
         {
-            if (id != persona.PersonaId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedPersona = await _personaService.UpdatePersonaAsync(id, dto);
 
-            var updatedPersona = await _personaService.UpdatePersonaAsync(id, persona);
+            if (updatedPersona == null)
+                return NotFound();
 
-            if (updatedPersona is null)
-                return NotFound(new { message = "Persona no encontrado" });
-
-            return Ok(updatedPersona);
+            return Ok(new
+            {
+                message = "Persona actualizado correctamente"
+            });
         }
 
         // DELETE: api/Persona/5
@@ -89,12 +95,24 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeletePersona(int id)
         {
-            var success = await _personaService.DeletePersonaAsync(id);
+            try
+            {
+                var success = await _personaService.DeletePersonaAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Persona no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Persona no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Registro eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

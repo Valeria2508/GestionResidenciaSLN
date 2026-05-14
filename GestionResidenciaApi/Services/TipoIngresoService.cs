@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,40 @@ namespace GestionResidenciaApi.Services
             return tipoIngreso;
         }
 
-        public async Task<GestionResidenciaApi.Models.TipoIngreso> UpdateTipoIngresoAsync(int id, GestionResidenciaApi.Models.TipoIngreso tipoIngreso)
+        public async Task<TipoIngreso?> UpdateTipoIngresoAsync(int id, TipoIngresoDTO dto)
         {
-            var existente = await _context.TipoIngreso.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.TipoIngreso.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Nombre = tipoIngreso.Nombre;
+            // Do not modify the primary key (TipoIngresoId) on update
+            existing.Nombre = dto.Nombre;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteTipoIngresoAsync(int id)
         {
             var existente = await _context.TipoIngreso.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.TipoIngreso.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.TipoIngreso.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de tipo de ingreso porque tiene registros relacionados.");
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using GestionResidenciaApi.Models;
+﻿using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 
 namespace GestionResidenciaApi.Services
 {
@@ -7,7 +8,7 @@ namespace GestionResidenciaApi.Services
         Task<List<GestionResidenciaApi.Models.Rol>> GetRolAsync();
         Task<GestionResidenciaApi.Models.Rol> GetRolByIdAsync(int id);
         Task<GestionResidenciaApi.Models.Rol> CreateRolAsync(GestionResidenciaApi.Models.Rol rol);
-        Task<GestionResidenciaApi.Models.Rol> UpdateRolAsync(int id, GestionResidenciaApi.Models.Rol rol);
+        Task<GestionResidenciaApi.Models.Rol?> UpdateRolAsync(int id, RolDTO dto);
         Task<bool> DeleteRolAsync(int id);
     }
 }

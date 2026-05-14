@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,43 @@ namespace GestionResidenciaApi.Services
             return persona;
         }
 
-        public async Task<GestionResidenciaApi.Models.Persona> UpdatePersonaAsync(int id, GestionResidenciaApi.Models.Persona persona)
+        public async Task<GestionResidenciaApi.Models.Persona> UpdatePersonaAsync(int id, PersonaDTO dto)
         {
-            var existente = await _context.Persona.FindAsync(id);
-            if (existente == null)
+            var persona = await _context.Persona.FindAsync(id);
+
+            if (persona == null)
                 return null;
 
-            existente.Correo = persona.Correo;
+            persona.TipoDocumento = dto.TipoDocumento;
+            persona.NumeroDocumento = dto.NumeroDocumento;
+            persona.Nombre = dto.Nombre;
+            persona.Telefono = dto.Telefono;
+            persona.Correo = dto.Correo;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return persona;
         }
 
         public async Task<bool> DeletePersonaAsync(int id)
         {
             var existente = await _context.Persona.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Persona.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Persona.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de personas porque tiene registros relacionados.");
+            }
         }
     }
 }

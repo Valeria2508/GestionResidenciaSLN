@@ -45,17 +45,19 @@ namespace GestionResidenciaApi.Controllers
                 TipoMantenimientoId = mantenimiento.TipoMantenimientoId,
                 UnidadId = mantenimiento.UnidadId,
                 Proveedor = mantenimiento.Proveedor,
-            };  
+                Fecha = mantenimiento.Fecha,
+                Descripcion = mantenimiento.Descripcion,
+                Costo = mantenimiento.Costo
+            };
 
             return Ok(dto);
         }
 
         // POST: api/Mantenimiento
-        [Authorize]
-        [HttpPost]
+        [HttpPost] // puedes dejarlo o quitarlo para pruebas
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] MantenimientoDTO dto)
+        public async Task<ActionResult> Create(CreateMantenimientoDTO dto)
         {
             var mantenimiento = new Mantenimiento
             {
@@ -69,6 +71,7 @@ namespace GestionResidenciaApi.Controllers
             };
 
             await _mantenimientoService.CreateMantenimientoAsync(mantenimiento);
+
             return Ok(mantenimiento);
         }
 
@@ -77,32 +80,41 @@ namespace GestionResidenciaApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Mantenimiento>> UpdateMantenimiento(int id, [FromBody] Mantenimiento mantenimiento)
+        public async Task<IActionResult> UpdateMantenimiento(int id, MantenimientoDTO dto)
         {
-            if (id != mantenimiento.MantenimientoId)
-                return BadRequest(new { message = "El ID no coincide" });
+            var updatedMantenimiento = await _mantenimientoService.UpdateMantenimientoAsync(id, dto);
 
-            var updatedMantenimiento = await _mantenimientoService.UpdateMantenimientoAsync(id, mantenimiento);
+            if (updatedMantenimiento == null)
+                return NotFound();
 
-            if (updatedMantenimiento is null)
-                return NotFound(new { message = "Mantenimiento no encontrado" });
-
-            return Ok(updatedMantenimiento);
+            return Ok(new
+            {
+                message = "Mantenimiento actualizado correctamente"
+            });
         }
 
         // DELETE: api/Mantenimiento/5
         [HttpDelete("{id:int}")]
-        [Authorize] // puedes dejarlo o quitarlo para pruebas
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteMantenimiento(int id)
         {
-            var success = await _mantenimientoService.DeleteMantenimientoAsync(id);
+            try
+            {
+                var success = await _mantenimientoService.DeleteMantenimientoAsync(id);
+                if (!success)
+                    return NotFound(new { message = "Mantenimiento no encontrado" });
 
-            if (!success)
-                return NotFound(new { message = "Mantenimiento no encontrado" });
-
-            return NoContent();
+                return Ok(new
+                {
+                    message = "Mantenimiento eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

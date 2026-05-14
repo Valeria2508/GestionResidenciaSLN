@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -30,26 +31,40 @@ namespace GestionResidenciaApi.Services
             return tipoEvento;
         }
 
-        public async Task<GestionResidenciaApi.Models.TipoEvento> UpdateTipoEventoAsync(int id, GestionResidenciaApi.Models.TipoEvento tipoEvento)
+        public async Task<GestionResidenciaApi.Models.TipoEvento?> UpdateTipoEventoAsync(int id, TipoEventoDTO dto)
         {
-            var existente = await _context.TipoEvento.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.TipoEvento.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Nombre = tipoEvento.Nombre;
+            // Do not modify the primary key (TipoEventoId) on update
+            existing.Nombre = dto.Nombre;
+
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteTipoEventoAsync(int id)
         {
             var existente = await _context.TipoEvento.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.TipoEvento.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.TipoEvento.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de Tipo de eventos porque tiene registros relacionados.");
+            }
         }
     }
 }

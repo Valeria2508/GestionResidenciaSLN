@@ -1,5 +1,6 @@
-﻿using GestionResidenciaApi.Models;
-using GestionResidenciaApi.Data;
+﻿using GestionResidenciaApi.Data;
+using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionResidenciaApi.Services
@@ -14,6 +15,7 @@ namespace GestionResidenciaApi.Services
         }
         public async Task<Usuario?> ValidarUsuarioAsync(string username, string password)
         {
+            
             // Buscamos el usuario que coincida con el nombre y la clave
             return await _context.Usuario
                 .FirstOrDefaultAsync(u => u.Username == username && u.PasswordHash == password);
@@ -35,26 +37,44 @@ namespace GestionResidenciaApi.Services
             return usuario;
         }
 
-        public async Task<GestionResidenciaApi.Models.Usuario> UpdateUsuarioAsync(int id, GestionResidenciaApi.Models.Usuario usuario)
+        public async Task<Usuario?> UpdateUsuarioAsync(int id, UsuarioCreateDTO dto)
         {
-            var existente = await _context.Usuario.FindAsync(id);
-            if (existente == null)
+            var existing = await _context.Usuario.FindAsync(id);
+
+            if (existing == null)
                 return null;
 
-            existente.Username = usuario.Username;
+            // Do not modify the primary key (UsuarioId) on update
+            existing.RolId = dto.RolId;
+            existing.PersonaId = dto.PersonaId;
+            existing.Username = dto.Username;
+            existing.PasswordHash = dto.PasswordHash;
+            existing.Activo = dto.Activo;
+            existing.FechaCreacion = dto.FechaCreacion;
             await _context.SaveChangesAsync();
-            return existente;
+
+            return existing;
         }
 
         public async Task<bool> DeleteUsuarioAsync(int id)
         {
             var existente = await _context.Usuario.FindAsync(id);
+
             if (existente == null)
                 return false;
 
-            _context.Usuario.Remove(existente);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Usuario.Remove(existente);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No se puede eliminar el registro de usuarios porque tiene registros relacionados.");
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using GestionResidenciaApi.Models;
+﻿using GestionResidenciaApi.DTOs;
+using GestionResidenciaApi.Models;
 
 namespace GestionResidenciaApi.Services
 {
@@ -7,7 +8,7 @@ namespace GestionResidenciaApi.Services
         Task<List<GestionResidenciaApi.Models.Permiso>> GetPermisoAsync();
         Task<GestionResidenciaApi.Models.Permiso> GetPermisoByIdAsync(int id);
         Task<GestionResidenciaApi.Models.Permiso> CreatePermisoAsync(GestionResidenciaApi.Models.Permiso permiso);
-        Task<GestionResidenciaApi.Models.Permiso> UpdatePermisoAsync(int id, GestionResidenciaApi.Models.Permiso permiso);
+        Task<GestionResidenciaApi.Models.Permiso?> UpdatePermisoAsync(int id, PermisoDTO dto);
         Task<bool> DeletePermisoAsync(int id);
     }
 }
