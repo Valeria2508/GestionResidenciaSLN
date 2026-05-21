@@ -1,11 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="container-fluid vh-100 d-flex justify-content-center align-items-center bg-light">
-
-    <div class="card shadow-lg p-4" style="width:420px">
-
-        @Body
-
+<AuthProvider>
+    <div class="container-fluid vh-100 d-flex justify-content-center align-items-center bg-light">
+        <div class="card shadow-lg p-4" style="width:520px">
+            @Body
+        </div>
     </div>
-
-</div>
+</AuthProvider>

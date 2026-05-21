@@ -1,11 +1,23 @@
-﻿namespace GestionResidencia.Pages
-{
-    public class _Host
-    {
-        <link href="css/site-custom.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+﻿@page "/"
+@namespace GestionResidenciaFront.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="~/" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="~/site-custom.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <title>Gestion Residencial</title>
+</head>
+<body>
+    <app>
+        <component type="typeof(GestionResidenciaFront.Components.Shared.App)" render-mode="ServerPrerendered" />
+    </app>
 
-    }
-
-}
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>

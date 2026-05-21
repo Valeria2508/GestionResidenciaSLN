@@ -1,10 +1,15 @@
 using GestionResidenciaFront.Components.Shared;
 using GestionResidenciaFront.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Servicios
 builder.Services.AddSingleton<GestionResidenciaFront.Services.SessionService>();
+builder.Services.AddScoped<GestionResidenciaFront.Services.AuthService>();
+
+// Mantener servicios simples (no cookie auth) y AuthService
+builder.Services.AddOptions();
 builder.Services.AddScoped<GestionResidenciaFront.Services.AuthService>();
 
 // En Program.cs del proyecto Front
@@ -25,8 +30,7 @@ app.UseRouting();
 
 app.UseAntiforgery();
 
-
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run(); app.UseAntiforgery();
+app.Run();

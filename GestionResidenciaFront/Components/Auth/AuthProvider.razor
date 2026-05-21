@@ -1,0 +1,79 @@
+@using GestionResidenciaFront.Data.Models
+@using GestionResidenciaFront.Services
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject GestionResidenciaFront.Services.AuthService AuthService
+@implements IAsyncDisposable
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public Usuario? CurrentUser { get; set; }
+    public string? CurrentRole { get; set; }
+    public string? CurrentUsername { get; set; }
+    public bool IsInitialized { get; private set; } = false;
+
+    private bool _authProviderInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_authProviderInitialized)
+        {
+            _authProviderInitialized = true;
+
+            CurrentRole = await JS.InvokeAsync<string>("localStorage.getItem", "userRole");
+            CurrentUsername = await JS.InvokeAsync<string>("localStorage.getItem", "username");
+
+            if (!string.IsNullOrEmpty(CurrentUsername) && !string.IsNullOrEmpty(CurrentRole))
+            {
+                CurrentUser = new Usuario
+                {
+                    UsuarioNombre = CurrentUsername,
+                    Rol = CurrentRole,
+                    Activo = true
+                };
+            }
+
+            IsInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    public async Task LoginAsync(Usuario user)
+    {
+        CurrentUser = user;
+        CurrentRole = user.Rol;
+        CurrentUsername = user.UsuarioNombre;
+
+        await JS.InvokeVoidAsync("localStorage.setItem", "userRole", user.Rol);
+        await JS.InvokeVoidAsync("localStorage.setItem", "username", user.UsuarioNombre);
+
+        StateHasChanged();
+    }
+
+    public async Task LogoutAsync()
+    {
+        CurrentUser = null;
+        CurrentRole = null;
+        CurrentUsername = null;
+        IsInitialized = false;
+
+        await JS.InvokeVoidAsync("localStorage.removeItem", "userRole");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "username");
+
+        StateHasChanged();
+    }
+
+    public bool IsAuthenticated => CurrentUser != null;
+    public bool IsAdmin => CurrentRole == "Administrador";
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await ValueTask.CompletedTask;
+    }
+}
