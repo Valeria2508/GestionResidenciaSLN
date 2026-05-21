@@ -8,8 +8,8 @@ namespace GestionResidenciaFront.Services
         private List<Usuario> usuarios = new()
         {
             new Usuario { Id = 1, UsuarioNombre = "admin", Password = "123", Rol = "Administrador", Activo = true },
-            new Usuario { Id = 2, UsuarioNombre = "porteria", Password = "123", Rol = "Porteria", Activo = true },
-            new Usuario { Id = 3, UsuarioNombre = "residente", Password = "123", Rol = "Residente", Activo = true },
+            new Usuario { Id = 2, UsuarioNombre = "porteria", Password = "1234", Rol = "Porteria", Activo = true },
+            new Usuario { Id = 3, UsuarioNombre = "residente", Password = "12345", Rol = "Residente", Activo = true },
             // Nuevo rol de usuario normal solicitado
             new Usuario { Id = 4, UsuarioNombre = "usuario", Password = "123", Rol = "Usuario", Activo = true }
         };
